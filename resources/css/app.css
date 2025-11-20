@@ -1,3 +1,44 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+/* Utility Gradient Text */
+.gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 100%);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 100%);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.water-drop {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* Utility Text Gradient */
+.gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 100%);
+}
+
+/* Utility Background Gradient */
+.gradient-bg {
+    background: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 100%);
+}
