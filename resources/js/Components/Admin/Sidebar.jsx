@@ -84,11 +84,11 @@ export default function Sidebar() {
                     <Link href="#" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Hak Akses</Link>
                 </DropdownMenu>
 
-                <MenuItem href="#" label="Produk" icon={HiCube} active={false} />
+                <MenuItem href="/products" label="Produk" icon={HiCube} active={false} />
 
                 <DropdownMenu label="Logistik" icon={HiTruck} active={false}>
-                    <Link href="#" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Stok Gudang</Link>
-                    <Link href="#" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pengiriman</Link>
+                    <Link href="orders" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pemesanan</Link>
+                    <Link href="deliveries" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pengiriman</Link>
                 </DropdownMenu>
 
                 <MenuSection label="Lainnya" />
