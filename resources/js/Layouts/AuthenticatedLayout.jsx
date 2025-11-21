@@ -11,15 +11,33 @@ export default function AuthenticatedLayout({ header, children }) {
     // State untuk mengontrol dropdown profil (Buka/Tutup)
     const [isUserOpen, setIsUserOpen] = useState(false);
 
-    const { flash, auth } = usePage().props;
+    const { flash, auth, errors } = usePage().props;
     const user = auth.user;
 
     // Efek Flash Message
     useEffect(() => {
-        if (flash.success) toast.success(flash.success);
-        if (flash.error) toast.error(flash.error);
-        if (flash.warning) toast(flash.warning, { icon: '⚠️' });
-    }, [flash]);
+        if (!flash) return;
+
+        if (flash.success) {
+            toast.success(flash.success, { duration: 5000 });
+        }
+        if (flash.error) {
+            toast.error(flash.error, { duration: 5000 });
+        }
+        if (flash.info) {
+            toast(flash.info, { duration: 5000 });
+        }
+
+        if (!flash.success) {
+            const keys = Object.keys(errors);
+            if (keys.length > 0) {
+                const firstMsg = errors[keys[0]];
+                const message = Array.isArray(firstMsg) ? firstMsg[0] : firstMsg;
+                toast.error(message ?? 'Periksa kembali input Anda.', { duration: 5000 });
+            }
+        }
+
+    }, [flash?.key]); 
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MineralWaterProductController;
@@ -78,6 +79,11 @@ Route::middleware('auth')->group(function () {
     // !!user
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+
+    Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
 });
 
 require __DIR__ . '/auth.php';

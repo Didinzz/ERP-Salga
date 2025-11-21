@@ -31,9 +31,11 @@ export default function Navbar() {
                                 {link.name}
                             </a>
                         ))}
-                        <button className="bg-primary text-white px-6 py-2.5 rounded-full hover:bg-secondary transition-all duration-300 font-semibold shadow-lg hover:shadow-xl cursor-pointer ">
-                            Login
-                        </button>
+                        <Link href={route('login')}>
+                            <button className="bg-primary text-white px-6 py-2.5 rounded-full hover:bg-secondary transition-all duration-300 font-semibold shadow-lg hover:shadow-xl cursor-pointer ">
+                                Login
+                            </button>
+                        </Link>
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -65,9 +67,11 @@ export default function Navbar() {
                                 {link.name}
                             </a>
                         ))}
-                        <button className="block w-full text-left px-3 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-all duration-300 font-semibold">
-                            Login
-                        </button>
+                        <Link href={route('login')}>
+                            <button className="block w-full text-left px-3 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-all duration-300 font-semibold">
+                                Login
+                            </button>
+                        </Link>
                     </div>
                 </div>
             )}

@@ -6,6 +6,9 @@ import {
     HiClipboardDocumentList, HiCog6Tooth, HiChevronDown
 } from "react-icons/hi2";
 
+import { RiDashboardFill } from "react-icons/ri";
+
+import { TbCashRegister } from "react-icons/tb";
 // Helper: Menu Item Single
 const MenuItem = ({ href, icon: Icon, label, active }) => (
     <Link
@@ -62,9 +65,10 @@ export default function Sidebar() {
         <aside className="w-64 bg-white shadow-lg flex-shrink-0 hidden md:flex flex-col h-screen sticky top-0 z-20">
             {/* Logo Header */}
             <div className="p-6 border-b border-gray-200 flex items-center">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                    <span className="font-bold text-xl">S</span>
-                </div>
+                <svg className="w-10 h-10 text-primary mr-3" viewBox="0 0 50 50" fill="currentColor">
+                    <path d="M25 5 L25 20 Q25 30 15 35 Q25 40 25 50 Q25 40 35 35 Q25 30 25 20 Z" opacity="0.8" />
+                    <ellipse cx="25" cy="15" rx="8" ry="6" fill="currentColor" opacity="0.6" />
+                </svg>
                 <div>
                     <h1 className="text-lg font-bold text-dark">PT Salga Mandiri</h1>
                     <p className="text-xs text-gray-500">Admin Panel</p>
@@ -75,18 +79,17 @@ export default function Sidebar() {
             <nav className="flex-1 overflow-y-auto py-4 scrollbar-hide">
                 <MenuSection label="Main Menu" />
 
-                <MenuItem href="/dashboard" label="Dashboard" icon={HiHome} active={url.startsWith('/dashboard')} />
+                <MenuItem href="/dashboard" label="Dashboard" icon={RiDashboardFill} active={url.startsWith('/dashboard')} />
 
                 <MenuSection label="Manajemen Data" />
 
-                <DropdownMenu label="Pengguna" icon={HiUserGroup} active={url.startsWith('/users')}>
-                    <Link href="/users" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">List Pengguna</Link>
-                    <Link href="#" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Hak Akses</Link>
-                </DropdownMenu>
+                <MenuItem href="/users" label="Pengguna" icon={HiUserGroup} active={url.startsWith('/users')} />
 
-                <MenuItem href="/products" label="Produk" icon={HiCube} active={false} />
+                <MenuItem href="/kasir" label="Kasir" icon={TbCashRegister} active={url.startsWith('/kasir')} />
 
-                <DropdownMenu label="Logistik" icon={HiTruck} active={false}>
+                <MenuItem href="/products" label="Produk" icon={HiCube} active={url.startsWith('/products')} />
+
+                <DropdownMenu label="Logistik" icon={HiTruck} active={url.startsWith('/orders')}>
                     <Link href="orders" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pemesanan</Link>
                     <Link href="deliveries" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pengiriman</Link>
                 </DropdownMenu>

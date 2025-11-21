@@ -17,6 +17,7 @@ class MineralWaterProductsSeeder extends Seeder
     public function run(): void
     {
         $now = Carbon::now();
+        Schema::disableForeignKeyConstraints();
         
         $products = [
             // === AQUA PRODUCTS ===

@@ -18,6 +18,8 @@ export default function ProductTable({ products, onEdit, onDelete, onUpdateStock
             : 'bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full';
     };
 
+    console.log(products.data)
+
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -70,7 +72,7 @@ export default function ProductTable({ products, onEdit, onDelete, onUpdateStock
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm font-medium text-gray-900">
-                                    {product.formatted_price}
+                                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.price)}
                                 </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
