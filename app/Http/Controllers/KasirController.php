@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MineralWaterProduct;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -29,9 +30,25 @@ class KasirController extends Controller
                 ];
             });
 
+        $todayTransactions = Order::whereDate('created_at', now())
+            ->where('status', 'completed') // Sesuaikan dengan status Anda
+            ->with('user') // Jika perlu nama kasir
+            ->latest()
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'invoice' => $order->order_code,
+                    'time' => $order->created_at->format('H:i'),
+                    'total' => $order->total_amount,
+                    'method' => $order->payment_status, // Atau kolom method jika ada
+                ];
+            });
+
         return Inertia::render('Kasir/Index', [
             'products' => $products,
             'cashierName' => auth()->user()->name ?? 'Staff',
+            'initialTransactions' => $todayTransactions,
             'date' => now()->translatedFormat('l, d F Y'),
         ]);
     }

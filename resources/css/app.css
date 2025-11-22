@@ -14,8 +14,17 @@
     background: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 100%);
 }
 
-html {
-    scroll-behavior: smooth;
+/* Tambahkan ini di paling atas */
+html, body {
+    height: 100%;
+    overflow: hidden;
+    /* Mencegah scroll pada window browser */
+}
+
+#app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .water-drop {
@@ -41,4 +50,17 @@ html {
 /* Utility Background Gradient */
 .gradient-bg {
     background: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 100%);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 20px;
 }

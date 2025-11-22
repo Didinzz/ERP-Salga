@@ -4,7 +4,7 @@ export default function HeaderStats({ cashierName, date }) {
     return (
         <header className="mb-6">
             <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center mb-8">
-                <div className="flex items-center gap-6 bg-white px-6 py-3 rounded-full shadow-sm border border-gray-100">
+                <div className="flex items-center gap-6 bg-white px-6 py-3 rounded-full shadow-sm border border-gray-100 ml-auto">
                     <div className="text-right hidden sm:block">
                         <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Tanggal</p>
                         <p className="text-sm font-bold text-gray-700">{date}</p>

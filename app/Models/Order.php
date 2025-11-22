@@ -86,7 +86,7 @@ class Order extends Model
     public function scopeThisMonth($query)
     {
         return $query->whereMonth('order_date', now()->month)
-                    ->whereYear('order_date', now()->year);
+            ->whereYear('order_date', now()->year);
     }
 
     // Methods
@@ -208,7 +208,7 @@ class Order extends Model
         $prefix = 'ORD';
         $timestamp = now()->format('YmdHis');
         $random = mt_rand(100, 999);
-        
+
         return $prefix . '-' . $timestamp . '-' . $random;
     }
 
@@ -220,5 +220,18 @@ class Order extends Model
     public function hasDelivery()
     {
         return $this->delivery()->exists();
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transactions::class);
+    }
+
+    /**
+     * Helper untuk mengambil transaksi terakhir yang sukses (pembayaran sah).
+     */
+    public function successfulTransaction()
+    {
+        return $this->hasOne(Transactions::class)->where('status', 'success')->latest();
     }
 }

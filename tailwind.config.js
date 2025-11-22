@@ -35,6 +35,7 @@ export default {
                 slideDown: 'slideDown 0.3s ease-out forwards',
                 fadeIn: 'fadeIn 0.3s ease-out forwards',
             }
+            
         },
     },
 
