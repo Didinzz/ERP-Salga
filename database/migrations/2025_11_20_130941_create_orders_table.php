@@ -23,6 +23,8 @@ return new class extends Migration
             $table->decimal('total_amount', 12, 2)->default(0);
             $table->decimal('paid_amount', 12, 2)->default(0);
             $table->enum('payment_status', ['pending', 'paid', 'partial', 'cancelled'])->default('pending');
+            $table->enum('payment_method', ['cash', 'transfer', 'qris'])->default('cash'); // TAMBAHKAN INI
+            $table->string('payment_proof')->nullable();
             $table->text('notes')->nullable();
             $table->timestamp('order_date')->useCurrent();
             $table->timestamp('completed_date')->nullable();

@@ -48,30 +48,29 @@ class OrderItem extends Model
         parent::boot();
 
         static::creating(function ($model) {
+            // Hitung subtotal otomatis
             $model->subtotal = $model->calculateSubtotal();
         });
 
         static::updating(function ($model) {
-            $model->subtotal = $model->calculateSubtotal();
+            // Hitung ulang subtotal jika quantity atau unit_price berubah
+            if ($model->isDirty(['quantity', 'unit_price'])) {
+                $model->subtotal = $model->calculateSubtotal();
+            }
         });
 
         static::created(function ($model) {
-            // Kurangi stok saat item order dibuat
-            if ($model->order->status !== 'cancelled') {
-                $model->product->decreaseStock($model->quantity);
-            }
+            // Update total order
             $model->order->updateTotal();
         });
 
         static::updated(function ($model) {
+            // Update total order jika ada perubahan
             $model->order->updateTotal();
         });
 
         static::deleted(function ($model) {
-            // Kembalikan stok saat item order dihapus
-            if ($model->order->status !== 'cancelled') {
-                $model->product->increaseStock($model->quantity);
-            }
+            // Update total order
             $model->order->updateTotal();
         });
     }
