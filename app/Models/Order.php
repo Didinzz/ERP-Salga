@@ -24,6 +24,8 @@ class Order extends Model
         'total_amount',
         'paid_amount',
         'payment_status',
+        'payment_method',
+        'payment_proof',
         'notes',
         'order_date',
         'completed_date',
@@ -129,7 +131,9 @@ class Order extends Model
     {
         // Kembalikan stok saat order dibatalkan
         foreach ($this->items as $item) {
-            $item->product->increaseStock($item->quantity);
+            if ($item->product) {
+                $item->product->increment('stock', $item->quantity);
+            }
         }
 
         $this->status = 'cancelled';
@@ -198,7 +202,7 @@ class Order extends Model
                 } else {
                     $model->payment_status = 'pending';
                 }
-                $model->saveQuietly(); // Avoid recursion
+                $model->saveQuietly();
             }
         });
     }
@@ -206,32 +210,24 @@ class Order extends Model
     public static function generateOrderCode()
     {
         $prefix = 'ORD';
-        $timestamp = now()->format('YmdHis');
-        $random = mt_rand(100, 999);
+        $date = now()->format('Ymd');
+        $random = mt_rand(1000, 9999);
 
-        return $prefix . '-' . $timestamp . '-' . $random;
+        return $prefix . '-' . $date . '-' . $random;
     }
 
-    public function delivery()
+    // Di app/Models/Order.php
+    public function getPaymentProofUrlAttribute()
     {
-        return $this->hasOne(Delivery::class);
+        if ($this->payment_proof) {
+            return asset($this->payment_proof);
+        }
+        return null;
     }
 
-    public function hasDelivery()
+    // Method untuk cek apakah ada bukti pembayaran
+    public function hasPaymentProof()
     {
-        return $this->delivery()->exists();
-    }
-
-    public function transactions()
-    {
-        return $this->hasMany(Transactions::class);
-    }
-
-    /**
-     * Helper untuk mengambil transaksi terakhir yang sukses (pembayaran sah).
-     */
-    public function successfulTransaction()
-    {
-        return $this->hasOne(Transactions::class)->where('status', 'success')->latest();
+        return !empty($this->payment_proof);
     }
 }

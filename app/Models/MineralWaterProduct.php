@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 class MineralWaterProduct extends Model
 {
+    use HasFactory;
 
     /**
      * The table associated with the model.
@@ -201,6 +202,28 @@ class MineralWaterProduct extends Model
     }
 
     /**
+     * Increase stock quantity using decrement method (for database-level operation)
+     */
+    public function incrementStock(int $quantity): bool
+    {
+        $this->increment('stock', $quantity);
+        return true;
+    }
+
+    /**
+     * Decrease stock quantity using decrement method (for database-level operation)
+     */
+    public function decrementStock(int $quantity): bool
+    {
+        if ($this->stock < $quantity) {
+            return false;
+        }
+
+        $this->decrement('stock', $quantity);
+        return true;
+    }
+
+    /**
      * Mark product as available.
      */
     public function markAsAvailable(): bool
@@ -260,10 +283,11 @@ class MineralWaterProduct extends Model
     public function getImageUrlAttribute(): string
     {
         if ($this->image) {
-            return asset('storage/products/' . $this->image);
+            // Perbaikan path storage - sesuaikan dengan struktur folder Anda
+            return asset('storage/' . $this->image);
         }
         
-        return asset('images/placeholder-product.jpg');
+        return 'https://placehold.co/300x300/e2e8f0/1e40af?text=No+Image';
     }
 
     /**
@@ -336,6 +360,11 @@ class MineralWaterProduct extends Model
             // Jika stok habis, otomatis tandai sebagai tidak tersedia
             if ($model->isDirty('stock') && $model->stock <= 0) {
                 $model->is_available = false;
+            }
+            
+            // Jika stok tersedia kembali, otomatis tandai sebagai tersedia
+            if ($model->isDirty('stock') && $model->stock > 0 && !$model->is_available) {
+                $model->is_available = true;
             }
         });
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MineralWaterProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\Pdf;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -94,6 +95,10 @@ Route::middleware('auth')->group(function () {
           Route::put('/{customer}', [MapsController::class, 'update'])->name('update');
           Route::delete('/{customer}', [MapsController::class, 'destroy'])->name('destroy');
      });
+    Route::post('/kasir/process-order', [KasirController::class, 'processOrder'])->name('kasir.process-order');
+    Route::get('/kasir/order-history', [KasirController::class, 'getOrderHistory'])->name('kasir.order-history');
+    Route::get('/kasir/orders/{order}', [KasirController::class, 'showOrder'])->name('kasir.orders.show');
+    Route::get('/kasir/orders/{order}/invoice', [KasirController::class, 'printInvoice'])->name('kasir.orders.invoice');
 });
 
 require __DIR__ . '/auth.php';

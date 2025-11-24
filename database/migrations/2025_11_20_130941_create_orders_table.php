@@ -28,9 +28,9 @@ return new class extends Migration {
             // paid_amount di sini adalah "Total yang sudah dibayar" (akumulasi dari tabel transactions)
             // Berguna untuk mengecek apakah pesanan sudah lunas atau masih kurang bayar (hutang)
             $table->decimal('paid_amount', 12, 2)->default(0);
-
-            $table->enum('payment_status', ['unpaid', 'partial', 'paid', 'overpaid'])->default('unpaid')->index();
-
+            $table->enum('payment_status', ['pending', 'paid', 'partial', 'cancelled'])->default('pending');
+            $table->enum('payment_method', ['cash', 'transfer', 'qris'])->default('cash'); // TAMBAHKAN INI
+            $table->string('payment_proof')->nullable();
             $table->text('notes')->nullable();
 
             // Waktu
