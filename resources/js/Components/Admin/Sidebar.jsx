@@ -9,6 +9,7 @@ import {
 import { RiDashboardFill } from "react-icons/ri";
 
 import { TbCashRegister } from "react-icons/tb";
+import { FaMapSigns } from 'react-icons/fa';
 // Helper: Menu Item Single
 const MenuItem = ({ href, icon: Icon, label, active }) => (
     <Link
@@ -90,8 +91,16 @@ export default function Sidebar() {
                 <MenuItem href="/products" label="Produk" icon={HiCube} active={url.startsWith('/products')} />
 
                 <DropdownMenu label="Logistik" icon={HiTruck} active={url.startsWith('/orders')}>
-                    <Link href="orders" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pemesanan</Link>
+                    <div>
+                        <Link href="orders" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pemesanan</Link>
+                    </div>
                     <Link href="deliveries" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pengiriman</Link>
+                    <div>
+                        <Link href="/logistik/map" className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === '/logistik/map' ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}>
+                            Peta Pelanggan
+                        </Link>
+
+                    </div>
                 </DropdownMenu>
 
                 <MenuSection label="Lainnya" />
