@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\KasirController;
+use App\Http\Controllers\MapsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MineralWaterProductController;
@@ -85,6 +86,15 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
+
+
+    // ! Maps
+    Route::prefix('/logistik/map')->name('logistik.map.')->group(function() {
+         Route::get('/', [MapsController::class, 'index'])->name('index');
+          Route::post('/', [MapsController::class, 'store'])->name('store');
+          Route::put('/{customer}', [MapsController::class, 'update'])->name('update');
+          Route::delete('/{customer}', [MapsController::class, 'destroy'])->name('destroy');
+     });
     Route::post('/kasir/process-order', [KasirController::class, 'processOrder'])->name('kasir.process-order');
     Route::get('/kasir/order-history', [KasirController::class, 'getOrderHistory'])->name('kasir.order-history');
     Route::get('/kasir/orders/{order}', [KasirController::class, 'showOrder'])->name('kasir.orders.show');
