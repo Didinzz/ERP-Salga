@@ -32,7 +32,7 @@ export default function DeleteUserConfirmation({ isOpen, onClose, user }) {
             <div className="bg-white text-gray-900 overflow-hidden rounded-lg shadow-xl transform transition-all">
 
                 {/* --- HEADER (Merah untuk Danger) --- */}
-                <div className="bg-primary px-6 py-4 flex items-center justify-between border-b border-blue-700">
+                <div className="bg-red-600 px-6 py-4 flex items-center justify-between border-b border-red-700">
                     <div className="flex items-center gap-4">
                         {/* Icon Wrapper Glassmorphism */}
                         <div className="p-2 bg-white/15 rounded-lg backdrop-blur-sm border border-white/20 shadow-inner text-white">

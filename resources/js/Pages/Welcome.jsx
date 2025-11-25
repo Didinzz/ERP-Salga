@@ -10,7 +10,7 @@ import Footer from '@/Components/LandingPage/Footer';
 export default function Welcome() {
     return (
         <>
-            <Head title="PT Salga Mandiri - Air Minum Berkualitas" />
+            <Head title="CV Salga Mandiri - Air Minum Berkualitas" />
 
             <div className="font-sans antialiased bg-white text-gray-900">
                 <Navbar />

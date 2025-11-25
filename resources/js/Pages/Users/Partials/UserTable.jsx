@@ -95,10 +95,10 @@ export default function UserTable({ users, searchTerm, onSearch, onAddClick }) {
                                         <td className="px-6 py-4"><Badge type="status" label={user.status || 'Aktif'} /></td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-3">
-                                                <button onClick={() => handleEdit(user)} className="text-primary hover:text-secondary transition-colors" title="Edit">
+                                                <button onClick={() => handleEdit(user)} className="p-2 bg-white border border-gray-200 rounded-lg text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm" title="Edit">
                                                     <HiPencilSquare className="w-5 h-5" />
                                                 </button>
-                                                <button onClick={() => handleDelete(user)} className="text-red-500 hover:text-red-700 transition-colors" title="Hapus">
+                                                <button onClick={() => handleDelete(user)} className="p-2 bg-white border border-gray-200 rounded-lg text-red-600 hover:bg-red-50 hover:border-red-300 transition-all shadow-sm" title="Hapus">
                                                     <HiTrash className="w-5 h-5" />
                                                 </button>
                                             </div>

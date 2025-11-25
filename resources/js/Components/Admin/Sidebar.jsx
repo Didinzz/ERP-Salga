@@ -71,7 +71,7 @@ export default function Sidebar() {
                     <ellipse cx="25" cy="15" rx="8" ry="6" fill="currentColor" opacity="0.6" />
                 </svg>
                 <div>
-                    <h1 className="text-lg font-bold text-dark">PT Salga Mandiri</h1>
+                    <h1 className="text-lg font-bold text-dark">CV. Salga Mandiri</h1>
                     <p className="text-xs text-gray-500">Admin Panel</p>
                 </div>
             </div>

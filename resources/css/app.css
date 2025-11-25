@@ -17,7 +17,8 @@
 /* Tambahkan ini di paling atas */
 html, body {
     height: 100%;
-    overflow: hidden;
+    scroll-behavior: smooth;
+    /* overflow: hidden; */
     /* Mencegah scroll pada window browser */
 }
 

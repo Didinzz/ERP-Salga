@@ -11,7 +11,7 @@ export default function Hero() {
                             Air Murni Berkualitas untuk <span className="gradient-text">Kehidupan Sehat</span>
                         </h1>
                         <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
-                            PT Salga Mandiri adalah produsen terpercaya air minum dalam kemasan (AMDK) dengan standar kualitas tinggi, memberikan kesegaran alami untuk keluarga Indonesia.
+                           CV Salga Mandiri adalah produsen terpercaya air minum dalam kemasan (AMDK) dengan standar kualitas tinggi, memberikan kesegaran alami untuk keluarga Indonesia.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                             <button className="bg-primary text-white px-8 py-3.5 rounded-full hover:bg-secondary transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">

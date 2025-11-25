@@ -31,7 +31,14 @@ export default function Index({ products, initialTransactions, cashierName, date
     }, [products, cart]);
 
     return (
-        <AuthenticatedLayout user={auth.user} header={null}>
+        <AuthenticatedLayout user={auth.user}
+            header={
+                <div>
+                    <h2 className="text-2xl font-bold text-dark">Manajemen Kasir</h2>
+                    <p className="text-sm text-gray-500 mt-1">Kelola data kasir CV Salga Mandiri</p>
+                </div>
+            }
+        >
             <Head title="Kasir POS" />
             <Toaster position="top-right" />
 

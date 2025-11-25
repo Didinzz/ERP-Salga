@@ -10,6 +10,7 @@ import ProductTable from './Partials/ProductTable';
 import CreateProductForm from './Partials/CreateProductForm';
 import EditProductForm from './Partials/EditProductForm'; // Import form edit
 import FilterSidebar from './Partials/FilterSidebar';
+import DeleteConfirmationModal from './Partials/DeleteConfirmationModal';
 
 export default function ProductIndex({ auth, products, filters, stats, filterOptions }) {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -23,15 +24,25 @@ export default function ProductIndex({ auth, products, filters, stats, filterOpt
         water_type: filters.water_type || '',
         stock_status: filters.stock_status || '',
     });
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    console.log({isDeleteModalOpen})
+
+    const openDeleteModal = (product) => {
+        setProductToDelete(product);
+        setIsDeleteModalOpen(true);
+    };
 
     // Handle Search
     const handleSearch = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
 
-        router.get(route('products.index'), { 
+        router.get(route('products.index'), {
             search: value,
-            ...selectedFilters 
+            ...selectedFilters
         }, {
             preserveState: true,
             replace: true,
@@ -44,12 +55,12 @@ export default function ProductIndex({ auth, products, filters, stats, filterOpt
             ...selectedFilters,
             [filterType]: value
         };
-        
+
         setSelectedFilters(newFilters);
 
-        router.get(route('products.index'), { 
+        router.get(route('products.index'), {
             search: searchTerm,
-            ...newFilters 
+            ...newFilters
         }, {
             preserveState: true,
             replace: true,
@@ -85,10 +96,23 @@ export default function ProductIndex({ auth, products, filters, stats, filterOpt
     };
 
     // Handle Delete Product
-    const handleDelete = (product) => {
-        if (confirm(`Apakah Anda yakin ingin menghapus produk "${product.name}"?`)) {
-            router.delete(route('products.destroy', product.id));
-        }
+    const handleDelete = () => {
+        if (!productToDelete) return;
+        setIsDeleting(true);
+
+        router.delete(route('products.destroy', productToDelete.id), {
+            onSuccess: () => {
+                setIsDeleteModalOpen(false);
+                setProductToDelete(null);
+            },
+            onError: (errors) => {
+                setIsDeleteModalOpen(false);
+            },
+            onFinish: () => {
+                setIsDeleting(false);
+                setIsDeleteModalOpen(false);
+            }
+        });
     };
 
     // Handle Toggle Availability
@@ -106,7 +130,7 @@ export default function ProductIndex({ auth, products, filters, stats, filterOpt
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900">Manajemen Produk Air Mineral</h2>
                     <p className="text-sm text-gray-500 mt-1">
-                        Kelola data produk air mineral PT Salga Mandiri
+                        Kelola data produk air mineral CV Salga Mandiri
                     </p>
                 </div>
             }
@@ -115,13 +139,13 @@ export default function ProductIndex({ auth, products, filters, stats, filterOpt
 
             <div className="py-6">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    
+
                     {/* 1. Bagian Statistik */}
                     <StatsGrid stats={stats} />
 
                     <div className="mt-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6">
-                            
+
                             {/* 2. Toolbar dengan Search dan Filter */}
                             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
                                 <div className="flex flex-col sm:flex-row gap-3">
@@ -184,8 +208,8 @@ export default function ProductIndex({ auth, products, filters, stats, filterOpt
                             <ProductTable
                                 products={products}
                                 onEdit={handleEdit}
-                                onDelete={handleDelete}
-                                onUpdateStock={() => {}} // Optional: bisa diimplementasi nanti
+                                onDelete={openDeleteModal}
+                                onUpdateStock={() => { }} // Optional: bisa diimplementasi nanti
                                 onToggleAvailability={handleToggleAvailability}
                             />
 
@@ -215,6 +239,14 @@ export default function ProductIndex({ auth, products, filters, stats, filterOpt
                 filterOptions={filterOptions}
                 onFilterChange={handleFilterChange}
                 onClearFilters={clearFilters}
+            />
+
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                processing={isDeleting}
+                itemName={productToDelete?.name}
             />
 
         </AuthenticatedLayout>

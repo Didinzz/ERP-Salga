@@ -23,11 +23,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'kontak' => '082346265909',
             'role' => 'admin',
-            'password'=> Hash::make('123'),
+            'password' => Hash::make('123'),
         ]);
 
         $this->call([
-            MineralWaterProductsSeeder::class,
+            CustomerSeeder::class
         ]);
     }
 }
