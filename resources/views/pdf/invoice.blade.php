@@ -87,9 +87,10 @@
         <div>
             <div class="section">
                 <div class="section-title">Informasi Pelanggan</div>
-                <div><strong>{{ $order->customer_name }}</strong></div>
-                <div>Telp: {{ $order->customer_phone ?: '-' }}</div>
-                <div>Alamat: {{ $order->customer_address ?: '-' }}</div>
+                <div><strong>{{ $order->customer->name }}</strong></div>
+                <div>Pemilik: {{ $order->customer->owner_name ?: '-' }}</div>
+                <div>Telp: {{ $order->customer->phone ?: '-' }}</div>
+                <div>Alamat: {{ $order->customer->address ?: '-' }}</div>
             </div>
         </div>
         <div>

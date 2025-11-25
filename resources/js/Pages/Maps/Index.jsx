@@ -86,7 +86,6 @@ export default function MapIndex({ auth, customers }) {
 
         setModalMode('create');
         setIsModalOpen(true);
-        setMode('view'); // Matikan mode tambah agar user fokus isi form
     };
 
     const handleDragEnd = (customer, newLatLng) => {

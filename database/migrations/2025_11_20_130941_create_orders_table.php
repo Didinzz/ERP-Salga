@@ -15,9 +15,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             // Info Customer (Dibuat nullable agar fleksibel untuk pelanggan "Walk-in")
-            $table->string('customer_name')->default('Pelanggan Umum');
-            $table->string('customer_phone')->nullable();
-            $table->text('customer_address')->nullable();
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
 
             // Status Workflow
             $table->enum('status', ['pending', 'confirmed', 'processing', 'completed', 'cancelled'])->default('pending')->index();
@@ -30,6 +28,7 @@ return new class extends Migration {
             $table->decimal('paid_amount', 12, 2)->default(0);
             $table->enum('payment_status', ['pending', 'paid', 'partial', 'cancelled'])->default('pending');
             $table->enum('payment_method', ['cash', 'transfer', 'qris'])->default('cash'); // TAMBAHKAN INI
+            $table->string('bank_name')->nullable();
             $table->string('payment_proof')->nullable();
             $table->text('notes')->nullable();
 

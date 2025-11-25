@@ -95,6 +95,8 @@ Route::middleware('auth')->group(function () {
           Route::put('/{customer}', [MapsController::class, 'update'])->name('update');
           Route::delete('/{customer}', [MapsController::class, 'destroy'])->name('destroy');
      });
+
+     // !! kasir
     Route::post('/kasir/process-order', [KasirController::class, 'processOrder'])->name('kasir.process-order');
     Route::get('/kasir/order-history', [KasirController::class, 'getOrderHistory'])->name('kasir.order-history');
     Route::get('/kasir/orders/{order}', [KasirController::class, 'showOrder'])->name('kasir.orders.show');

@@ -9,6 +9,7 @@ export default function TransactionHistory({ transactions, onBack }) {
     const [search, setSearch] = useState('');
     const [filteredData, setFilteredData] = useState([]);
 
+
     // Filter logic dengan useEffect
     useEffect(() => {
         let result = transactions;
@@ -32,6 +33,9 @@ export default function TransactionHistory({ transactions, onBack }) {
 
         setFilteredData(result);
     }, [transactions, search, dateFilter]);
+
+    console.log({ transactions })
+
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('id-ID').format(amount);

@@ -17,14 +17,13 @@ class Order extends Model
     protected $fillable = [
         'order_code',
         'user_id',
-        'customer_name',
-        'customer_phone',
-        'customer_address',
+        'customer_id',
         'status',
         'total_amount',
         'paid_amount',
         'payment_status',
         'payment_method',
+        'bank_name',
         'payment_proof',
         'notes',
         'order_date',
@@ -47,6 +46,11 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     // Scopes
