@@ -87,7 +87,7 @@ Route::middleware('auth')->group(function () {
 
 
      // ! Maps
-     Route::prefix('/logistik/map')->name('logistik.map.')->group(function () {
+Route::prefix('/logistik/map')->name('logistik.map.')->group(function () {
           Route::get('/', [MapsController::class, 'index'])->name('index');
           Route::post('/', [MapsController::class, 'store'])->name('store');
           Route::put('/{customer}', [MapsController::class, 'update'])->name('update');

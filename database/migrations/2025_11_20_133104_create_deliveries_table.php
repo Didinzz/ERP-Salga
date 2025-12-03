@@ -23,6 +23,7 @@ return new class extends Migration {
             // 4. Status Pengiriman
             $table->enum('status', [
                 'pending',    // Menunggu Driver
+                'assigned',   // Driver Siap
                 'shipping',   // Sedang Diantar
                 'delivered',  // Diterima
                 'failed'      // Gagal
