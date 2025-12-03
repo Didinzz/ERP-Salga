@@ -1,291 +1,222 @@
-// resources/js/Pages/Deliveries/Partials/DeliveryTable.jsx
-
-import { Link } from '@inertiajs/react';
 import { useState } from 'react';
+import { FaTruck, FaUser, FaMapMarkerAlt, FaBox, FaCalendarAlt, FaStickyNote, FaMoneyBillWave, FaCheck, FaTrash } from 'react-icons/fa';
+import { FaBoxOpen } from 'react-icons/fa6';
 
-export default function DeliveryTable({ 
-    deliveries, 
+export default function DeliveryTable({
+    deliveries,
     drivers,
-    onView, 
-    onAssignDriver, 
-    onPickup, 
-    onDeliver, 
-    onFail, 
-    onCancel, 
-    onDelete 
+    onView,
+    onAssignDriver,
+    onPickup,
+    onDeliver,
+    onFail,
+    onCancel,
+    onDelete
 }) {
     const [selectedDriver, setSelectedDriver] = useState({});
-    const [deliveryNotes, setDeliveryNotes] = useState({});
 
-    const handleAssignDriver = (delivery) => {
+    const handleAssign = (delivery) => {
         const driverId = selectedDriver[delivery.id];
-        if (driverId) {
-            onAssignDriver(delivery, driverId);
-            setSelectedDriver(prev => ({ ...prev, [delivery.id]: '' }));
-        }
+        if (driverId) onAssignDriver(delivery, driverId);
     };
 
-    const handleDeliver = (delivery) => {
-        const notes = deliveryNotes[delivery.id] || '';
-        onDeliver(delivery, notes);
-        setDeliveryNotes(prev => ({ ...prev, [delivery.id]: '' }));
-    };
-
-    const handleFail = (delivery) => {
-        const notes = deliveryNotes[delivery.id] || '';
-        if (notes) {
-            onFail(delivery, notes);
-            setDeliveryNotes(prev => ({ ...prev, [delivery.id]: '' }));
-        } else {
-            alert('Harap masukkan alasan kegagalan');
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case 'pending': return 'bg-yellow-50 text-yellow-700 border border-yellow-200';
+            case 'assigned': return 'bg-blue-50 text-blue-700 border border-blue-200';
+            case 'shipping': return 'bg-purple-50 text-purple-700 border border-purple-200';
+            case 'delivered': return 'bg-green-50 text-green-700 border border-green-200';
+            case 'failed': return 'bg-red-50 text-red-700 border border-red-200';
+            default: return 'bg-gray-50 text-gray-700 border border-gray-200';
         }
     };
 
     const getStatusText = (status) => {
-        const statusMap = {
-            'pending': 'Menunggu',
-            'assigned': 'Ditugaskan',
-            'on_delivery': 'Dalam Pengiriman',
-            'delivered': 'Terkirim',
-            'cancelled': 'Dibatalkan',
+        const map = {
+            'pending': 'Menunggu Driver',
+            'assigned': 'Driver Siap',
+            'shipping': 'Sedang Jalan',
+            'delivered': 'Selesai',
             'failed': 'Gagal'
         };
-        return statusMap[status] || status;
+        return map[status] || status;
     };
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
-        return new Date(dateString).toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
+        return new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' });
     };
 
+    if (!deliveries.data || deliveries.data.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                    <FaBoxOpen  className="text-4xl text-gray-300" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900">Tidak ada data pengiriman</h3>
+                <p className="text-gray-500 mt-1 text-sm max-w-sm">
+                    Coba ubah kata kunci pencarian atau filter Anda, atau buat pengiriman baru jika belum ada.
+                </p>
+            </div>
+        );
+    }
+
     return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                    <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Pengiriman
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Penerima
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Order
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Driver
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Jadwal
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Biaya
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Aksi
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {deliveries.data.map((delivery) => (
-                        <tr key={delivery.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div>
-                                    <div className="text-sm font-medium text-gray-900">
-                                        {delivery.delivery_code}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                        Dibuat: {formatDate(delivery.created_at)}
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4">
-                                <div className="text-sm font-medium text-gray-900">
-                                    {delivery.recipient_name}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    {delivery.recipient_phone}
-                                </div>
-                                <div className="text-xs text-gray-400 max-w-xs truncate">
-                                    {delivery.delivery_address}
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">
-                                    {delivery.order?.order_code}
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                    {delivery.order?.items?.length || 0} items
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                {delivery.driver ? (
-                                    <div className="text-sm text-gray-900">
-                                        {delivery.driver.name}
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center space-x-2">
-                                        <select
-                                            value={selectedDriver[delivery.id] || ''}
-                                            onChange={(e) => setSelectedDriver(prev => ({
-                                                ...prev,
-                                                [delivery.id]: e.target.value
-                                            }))}
-                                            className="text-sm border border-gray-300 rounded px-2 py-1"
-                                        >
-                                            <option value="">Pilih Driver</option>
-                                            {drivers.map(driver => (
-                                                <option key={driver.id} value={driver.id}>
-                                                    {driver.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <button
-                                            onClick={() => handleAssignDriver(delivery)}
-                                            className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                                        >
-                                            Assign
-                                        </button>
-                                    </div>
-                                )}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">
-                                    {formatDate(delivery.scheduled_date)}
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">
-                                    {delivery.formatted_delivery_cost}
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`inline-flex text-xs px-2 py-1 rounded-full ${delivery.status_badge}`}>
-                                    {getStatusText(delivery.status)}
-                                </span>
-                                {delivery.delivered_at && (
-                                    <div className="text-xs text-gray-500 mt-1">
-                                        {formatDate(delivery.delivered_at)}
-                                    </div>
-                                )}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div className="flex flex-col space-y-1">
-                                    <button
-                                        onClick={() => onView(delivery)}
-                                        className="text-blue-600 hover:text-blue-900 text-xs text-left"
-                                    >
-                                        Detail
-                                    </button>
-                                    
-                                    {delivery.status === 'assigned' && (
-                                        <button
-                                            onClick={() => onPickup(delivery)}
-                                            className="text-green-600 hover:text-green-900 text-xs text-left"
-                                        >
-                                            Pickup
-                                        </button>
-                                    )}
-                                    
-                                    {(delivery.status === 'assigned' || delivery.status === 'on_delivery') && (
-                                        <div className="space-y-1">
-                                            <input
-                                                type="text"
-                                                value={deliveryNotes[delivery.id] || ''}
-                                                onChange={(e) => setDeliveryNotes(prev => ({
-                                                    ...prev,
-                                                    [delivery.id]: e.target.value
-                                                }))}
-                                                placeholder="Catatan"
-                                                className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
-                                            />
-                                            <div className="flex space-x-1">
-                                                <button
-                                                    onClick={() => handleDeliver(delivery)}
-                                                    className="flex-1 text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-                                                >
-                                                    Terkirim
-                                                </button>
-                                                <button
-                                                    onClick={() => handleFail(delivery)}
-                                                    className="flex-1 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                                >
-                                                    Gagal
-                                                </button>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50/50">
+                        <tr>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID & Waktu</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Penerima & Alamat</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Driver</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Info Order</th>
+                            <th className="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {deliveries.data.map((delivery) => (
+                            <tr key={delivery.id} className="hover:bg-blue-50/30 transition-colors group">
+
+                                {/* 1. ID & Waktu */}
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                        <div className="flex-shrink-0 h-10 w-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 border border-blue-100">
+                                            <FaTruck />
+                                        </div>
+                                        <div className="ml-3">
+                                            <div className="text-sm font-bold text-gray-900">{delivery.do_code}</div>
+                                            <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                                                <FaCalendarAlt size={10} />
+                                                {/* Asumsi created_at adalah waktu pembuatan surat jalan */}
+                                                {formatDate(delivery.created_at)}
                                             </div>
                                         </div>
-                                    )}
-                                    
-                                    {!['delivered', 'cancelled', 'failed'].includes(delivery.status) && (
-                                        <button
-                                            onClick={() => onCancel(delivery)}
-                                            className="text-yellow-600 hover:text-yellow-900 text-xs text-left"
-                                        >
-                                            Batal
-                                        </button>
-                                    )}
-                                    
-                                    {['pending', 'cancelled'].includes(delivery.status) && (
-                                        <button
-                                            onClick={() => onDelete(delivery)}
-                                            className="text-red-600 hover:text-red-900 text-xs text-left"
-                                        >
-                                            Hapus
-                                        </button>
-                                    )}
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                    </div>
+                                </td>
 
-            {/* Pagination */}
-            {deliveries.links && deliveries.links.length > 3 && (
-                <div className="px-6 py-4 border-t border-gray-200">
-                    <nav className="flex items-center justify-between">
-                        <div className="text-sm text-gray-700">
-                            Menampilkan {deliveries.from} sampai {deliveries.to} dari {deliveries.total} hasil
-                        </div>
-                        <div className="flex space-x-2">
-                            {deliveries.links.map((link, index) => (
-                                <Link
-                                    key={index}
-                                    href={link.url || '#'}
-                                    className={`px-3 py-1 text-sm rounded-md ${
-                                        link.active
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                                    } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ))}
-                        </div>
-                    </nav>
-                </div>
-            )}
+                                {/* 2. Penerima */}
+                                <td className="px-6 py-4">
+                                    <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                                        <FaUser className="text-gray-400 text-xs" />
+                                        {delivery.customer_name}
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1 flex items-start gap-1.5 max-w-[200px]" title={delivery.shipping_address}>
+                                        <FaMapMarkerAlt className="text-gray-400 text-xs mt-0.5 flex-shrink-0" />
+                                        <span className="truncate">{delivery.shipping_address}</span>
+                                    </div>
+                                    {delivery.order?.notes && (
+                                        <div className="text-[10px] text-orange-600 mt-1 flex items-center gap-1 bg-orange-50 px-1.5 py-0.5 rounded w-fit">
+                                            <FaStickyNote /> {delivery.order.notes}
+                                        </div>
+                                    )}
+                                </td>
 
-            {/* Empty State */}
-            {deliveries.data.length === 0 && (
-                <div className="text-center py-12">
-                    <div className="text-gray-400 text-6xl mb-4">🚚</div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Tidak ada pengiriman</h3>
-                    <p className="text-gray-500 mb-4">Belum ada pengiriman yang dibuat.</p>
-                    <Link
-                        href={route('deliveries.create')}
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-white hover:bg-blue-700"
-                    >
-                        Buat Pengiriman Pertama
-                    </Link>
-                </div>
-            )}
+                                {/* 3. Driver */}
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {delivery.driver ? (
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs border border-green-200">
+                                                {delivery.driver.name.substring(0, 2).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-900">{delivery.driver.name}</p>
+                                                <p className="text-xs text-gray-500">{delivery.driver.phone || '-'}</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex gap-2 items-center">
+                                            <select
+                                                className="text-xs border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 py-1 pl-2 pr-6"
+                                                value={selectedDriver[delivery.id] || ''}
+                                                onChange={(e) => setSelectedDriver({ ...selectedDriver, [delivery.id]: e.target.value })}
+                                            >
+                                                <option value="">Pilih Driver...</option>
+                                                {drivers.map(d => (
+                                                    <option key={d.id} value={d.id}>{d.name}</option>
+                                                ))}
+                                            </select>
+                                            <button
+                                                onClick={() => handleAssign(delivery)}
+                                                className="p-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                disabled={!selectedDriver[delivery.id]}
+                                                title="Simpan Driver"
+                                            >
+                                                <FaCheck size={10} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </td>
+
+                                {/* 4. Info Order & Pembayaran */}
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="text-sm text-gray-900 flex items-center gap-1">
+                                        <FaBox className="text-gray-400" size={10} />
+                                        Ref: {delivery.order?.order_code}
+                                    </div>
+                                    {/* Badge Status Pembayaran (Penting buat driver) */}
+                                    {/* Asumsi kita kirim data payment_status dari controller */}
+                                    <div className="mt-1">
+                                        {delivery.order?.payment_status === 'paid' ? (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-green-50 text-green-700 border border-green-200">
+                                                <FaMoneyBillWave /> Lunas
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-700 border border-red-200">
+                                                <FaMoneyBillWave /> Belum Lunas
+                                            </span>
+                                        )}
+                                    </div>
+                                </td>
+
+                                {/* 5. Status */}
+                                <td className="px-6 py-4 whitespace-nowrap text-center">
+                                    <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(delivery.status)}`}>
+                                        {getStatusText(delivery.status)}
+                                    </span>
+                                    {delivery.shipped_at && (
+                                        <p className="text-[10px] text-gray-400 mt-1 italic">
+                                            {delivery.status === 'delivered' ? 'Selesai' : 'Berangkat'}: {formatDate(delivery.shipped_at).split(' ')[1]}
+                                        </p>
+                                    )}
+                                </td>
+
+                                {/* 6. Aksi */}
+                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div className="flex justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+
+                                        {/* Tombol Detail */}
+                                        <button onClick={() => onView(delivery)} className="px-3 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-blue-600 text-xs font-medium shadow-sm transition-all">
+                                            Detail
+                                        </button>
+
+                                        {/* Tombol Workflow Cepat */}
+                                        {delivery.status === 'assigned' && (
+                                            <button onClick={() => onPickup(delivery)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs font-bold shadow-sm transition-all">
+                                                Jalan
+                                            </button>
+                                        )}
+
+                                        {delivery.status === 'shipping' && (
+                                            <button onClick={() => onDeliver(delivery)} className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 text-xs font-bold shadow-sm transition-all">
+                                                Selesai
+                                            </button>
+                                        )}
+
+                                        {/* Tombol Delete (Hanya jika pending/failed) */}
+                                        {['pending', 'failed', 'cancelled'].includes(delivery.status) && (
+                                            <button onClick={() => onDelete(delivery)} className="p-1.5 text-red-400 hover:text-red-600 transition-colors" title="Hapus">
+                                                <FaTrash size={14} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

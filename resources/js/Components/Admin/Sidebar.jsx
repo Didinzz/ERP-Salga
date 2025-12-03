@@ -90,11 +90,23 @@ export default function Sidebar() {
 
                 <MenuItem href="/products" label="Produk" icon={HiCube} active={url.startsWith('/products')} />
 
-                <DropdownMenu label="Logistik" icon={HiTruck} active={url.startsWith('/orders')}>
+                <DropdownMenu label="Logistik" icon={HiTruck} active={url.startsWith('/logistik')}>
+                {/* pemesanan */}
+                    {/* <div>
+                        <Link href="/logistik/orders" className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === '/logistik/orders' ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}>
+                            Pemesanan
+                        </Link>
+                    </div> */}
+
+                    {/* pengiriman */}
+
                     <div>
-                        <Link href="orders" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pemesanan</Link>
+                        <Link href="/logistik/deliveries" className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === '/logistik/deliveries' ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}>
+                            Pengiriman
+                        </Link>
                     </div>
-                    <Link href="deliveries" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pengiriman</Link>
+
+                    {/* peta pelanggan */}
                     <div>
                         <Link href="/logistik/map" className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === '/logistik/map' ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}>
                             Peta Pelanggan
@@ -103,10 +115,10 @@ export default function Sidebar() {
                     </div>
                 </DropdownMenu>
 
-                <MenuSection label="Lainnya" />
+                {/* <MenuSection label="Lainnya" />
 
                 <MenuItem href="#" label="Laporan" icon={HiClipboardDocumentList} active={false} />
-                <MenuItem href="#" label="Pengaturan" icon={HiCog6Tooth} active={false} />
+                <MenuItem href="#" label="Pengaturan" icon={HiCog6Tooth} active={false} /> */}
             </nav>
         </aside>
     );

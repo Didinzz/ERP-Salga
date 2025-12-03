@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
 
             // Status Workflow
-            $table->enum('status', ['pending', 'confirmed', 'processing', 'completed', 'cancelled'])->default('pending')->index();
+            $table->enum('status', ['pending', 'assigned', 'confirmed', 'processing', 'completed', 'cancelled'])->default('pending')->index();
 
             // Keuangan (Ringkasan)
             $table->decimal('total_amount', 12, 2)->default(0);

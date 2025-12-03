@@ -35,7 +35,7 @@ export default function EditProductForm({ isOpen, onClose, product }) {
                 brand: product.brand || '',
                 description: product.description || '',
                 price: product.price || '',
-                stock: product.stock || '',
+                stock: product.stock || '0',
                 size: product.size || '',
                 bottle_type: product.bottle_type || 'botol_plastik',
                 water_type: product.water_type || 'mineral',

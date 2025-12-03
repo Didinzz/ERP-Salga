@@ -1,7 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Toaster } from 'react-hot-toast';
 
 // Hooks
 import { useCart } from './Partials/hooks/useCart'; // Sesuaikan path import
@@ -40,7 +39,6 @@ export default function Index({ products, initialTransactions, cashierName, date
             }
         >
             <Head title="Kasir POS" />
-            <Toaster position="top-right" />
 
             <div className="min-h-screen w-full font-sans text-gray-900 pb-10 bg-gray-100">
                 <div className="max-w-[1920px] mx-auto p-4 lg:p-6">

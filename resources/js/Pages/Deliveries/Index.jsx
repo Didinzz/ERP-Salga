@@ -1,8 +1,10 @@
-// resources/js/Pages/Deliveries/Index.jsx
-
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Toaster, toast } from 'react-hot-toast';
+
+// Import Icons
+import { FaFilter, FaPlus, FaSearch } from "react-icons/fa";
 
 // Import Partials
 import DeliveryStats from './Partials/DeliveryStats';
@@ -10,184 +12,187 @@ import DeliveryTable from './Partials/DeliveryTable';
 import DeliveryFilters from './Partials/DeliveryFilters';
 
 export default function DeliveryIndex({ auth, deliveries, filters, stats, drivers }) {
-    const [searchTerm, setSearchTerm] = useState(filters.search || '');
-    const [selectedFilters, setSelectedFilters] = useState({
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+    // --- 1. GABUNGKAN STATE (PENTING) ---
+    // Gabungkan search dan filter jadi satu state objek agar bisa didebounce bersamaan
+    const [queryParams, setQueryParams] = useState({
+        search: filters.search || '',
         status: filters.status || '',
         date_from: filters.date_from || '',
         date_to: filters.date_to || '',
     });
 
-    // Handle Search
+    const isFirstRun = useRef(true);
+
+    // --- 2. SINGLE DEBOUNCE EFFECT (AUTO FILTER) ---
+    useEffect(() => {
+        // Skip render pertama (initial load)
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+
+        // Tunggu 500ms setelah ada perubahan di queryParams (search ATAU filter)
+        const delayDebounceFn = setTimeout(() => {
+            router.get(route('deliveries.index'), queryParams, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [queryParams]); // Dependency: Jalankan setiap kali queryParams berubah
+
+    // --- Handlers Update State ---
+
     const handleSearch = (e) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-
-        router.get(route('deliveries.index'), { 
-            search: value,
-            ...selectedFilters 
-        }, {
-            preserveState: true,
-            replace: true,
-        });
+        setQueryParams(prev => ({ ...prev, search: e.target.value }));
     };
 
-    // Handle Filter Change
     const handleFilterChange = (filterType, value) => {
-        const newFilters = {
-            ...selectedFilters,
-            [filterType]: value
-        };
-        
-        setSelectedFilters(newFilters);
-
-        router.get(route('deliveries.index'), { 
-            search: searchTerm,
-            ...newFilters 
-        }, {
-            preserveState: true,
-            replace: true,
-        });
+        setQueryParams(prev => ({ ...prev, [filterType]: value }));
+        // Tidak perlu panggil router.get manual disini, useEffect akan mengurusnya
     };
 
-    // Clear All Filters
     const clearFilters = () => {
-        setSelectedFilters({
+        setQueryParams(prev => ({
+            ...prev,
             status: '',
             date_from: '',
-            date_to: '',
-        });
-        setSearchTerm('');
-
-        router.get(route('deliveries.index'), {}, {
-            preserveState: true,
-            replace: true,
-        });
+            date_to: ''
+        }));
     };
 
-    // Handle Actions
-    const handleView = (delivery) => {
-        router.get(route('deliveries.show', delivery.id));
-    };
+    // --- Handlers Aksi Tabel ---
+    const handleView = (delivery) => toast("Fitur detail belum diimplementasi");
 
     const handleAssignDriver = (delivery, driverId) => {
-        router.post(route('deliveries.assign-driver', delivery.id), {
-            driver_id: driverId
-        });
+        router.post(route('deliveries.assign-driver', delivery.id), { driver_id: driverId });
     };
 
     const handlePickup = (delivery) => {
-        if (confirm(`Tandai pengiriman ${delivery.delivery_code} sebagai dalam perjalanan?`)) {
-            router.post(route('deliveries.pickup', delivery.id));
+        if (confirm(`Konfirmasi pengiriman ${delivery.do_code} berangkat?`)) {
+            router.post(route('deliveries.pickup', delivery.id), {}, { onError: () => toast.error('Status: Belum Berangkat') });
         }
     };
 
     const handleDeliver = (delivery, notes = '') => {
-        if (confirm(`Tandai pengiriman ${delivery.delivery_code} sebagai terkirim?`)) {
-            router.post(route('deliveries.deliver', delivery.id), {
-                delivery_notes: notes
-            });
+        if (confirm(`Selesaikan pengiriman ${delivery.do_code}?`)) {
+            router.post(route('deliveries.deliver', delivery.id), { delivery_notes: notes }, { onSuccess: () => toast.success('Pengiriman Selesai!') });
         }
     };
 
     const handleFail = (delivery, notes = '') => {
-        if (confirm(`Tandai pengiriman ${delivery.delivery_code} sebagai gagal?`)) {
-            router.post(route('deliveries.fail', delivery.id), {
-                delivery_notes: notes
-            });
+        if (confirm(`Tandai pengiriman ${delivery.do_code} sebagai GAGAL?`)) {
+            router.post(route('deliveries.fail', delivery.id), { delivery_notes: notes }, { onSuccess: () => toast.error('Status: Gagal Kirim') });
         }
     };
 
     const handleCancel = (delivery) => {
-        if (confirm(`Batalkan pengiriman ${delivery.delivery_code}?`)) {
-            router.post(route('deliveries.cancel', delivery.id));
+        if (confirm(`Batalkan pengiriman ${delivery.do_code}?`)) {
+            router.post(route('deliveries.cancel', delivery.id), {}, { onSuccess: () => toast('Dibatalkan') });
         }
     };
 
     const handleDelete = (delivery) => {
-        if (confirm(`Hapus pengiriman ${delivery.delivery_code}?`)) {
-            router.delete(route('deliveries.destroy', delivery.id));
+        if (confirm(`Hapus data pengiriman ${delivery.do_code}?`)) {
+            router.delete(route('deliveries.destroy', delivery.id), { onSuccess: () => toast.success('Data dihapus') });
         }
     };
 
-    return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Manajemen Pengiriman</h2>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Kelola pengiriman produk air mineral PT Salga Mandiri
-                    </p>
-                </div>
-            }
-        >
-            <Head title="Manajemen Pengiriman" />
+    // Hitung jumlah filter aktif (selain search)
+    const activeFilterCount = [queryParams.status, queryParams.date_from, queryParams.date_to].filter(Boolean).length;
 
-            <div className="py-6">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    
-                    {/* 1. Bagian Statistik */}
+    return (
+        <AuthenticatedLayout user={auth.user} header={null}>
+            <Head title="Logistik - Pengiriman" />
+            <Toaster position="top-right" />
+
+            <div className="py-6 bg-gray-50 min-h-screen">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                    {/* 1. STATS */}
                     <DeliveryStats stats={stats} />
 
-                    <div className="mt-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="mt-6 bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200">
                         <div className="p-6">
-                            
-                            {/* 2. Toolbar dengan Search dan Filter */}
+
+                            {/* 2. TOOLBAR */}
                             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-                                <div className="flex flex-col sm:flex-row gap-3">
+                                <div className="flex flex-col sm:flex-row gap-3 flex-1">
+
                                     {/* Search Input */}
-                                    <div className="relative">
+                                    <div className="relative flex-1 max-w-md">
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                                            </svg>
+                                            <FaSearch className="text-gray-400" />
                                         </div>
                                         <input
                                             type="text"
-                                            value={searchTerm}
-                                            onChange={handleSearch}
-                                            placeholder="Cari kode pengiriman, penerima..."
-                                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-64"
+                                            value={queryParams.search}
+                                            onChange={handleSearch} // Hanya update state
+                                            placeholder="Cari No. Surat Jalan, Nama Penerima..."
+                                            className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full text-sm shadow-sm transition-all"
                                         />
                                     </div>
 
                                     {/* Filter Button */}
-                                    <DeliveryFilters
-                                        filters={selectedFilters}
-                                        onFilterChange={handleFilterChange}
-                                        onClearFilters={clearFilters}
-                                    />
+                                    <button
+                                        onClick={() => setIsFilterOpen(true)}
+                                        className="inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-colors"
+                                    >
+                                        <FaFilter className="mr-2 text-gray-400" /> Filter
+                                        {activeFilterCount > 0 && (
+                                            <span className="ml-2 bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold">{activeFilterCount}</span>
+                                        )}
+                                    </button>
+
+                                    {/* Reset Button */}
+                                    {activeFilterCount > 0 && (
+                                        <button onClick={clearFilters} className="text-sm text-red-600 hover:underline">Reset</button>
+                                    )}
                                 </div>
 
-                                {/* Add Delivery Button */}
-                                <button
-                                    onClick={() => router.get(route('deliveries.create'))}
-                                    className="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                                >
-                                    <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    Buat Pengiriman
-                                </button>
+                                {/* Tombol Tambah Manual */}
+                                <div className="flex-shrink-0">
+                                    <button
+                                        onClick={() => router.get(route('deliveries.create'))}
+                                        className="inline-flex items-center px-4 py-2.5 bg-blue-600 border border-transparent rounded-xl font-semibold text-white hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all shadow-md"
+                                    >
+                                        <FaPlus className="mr-2" />
+                                        Buat Pengiriman Manual
+                                    </button>
+                                </div>
                             </div>
 
-                            {/* 3. Tabel Pengiriman */}
+                            {/* 3. TABLE */}
                             <DeliveryTable
                                 deliveries={deliveries}
                                 drivers={drivers}
-                                onView={handleView}
                                 onAssignDriver={handleAssignDriver}
                                 onPickup={handlePickup}
                                 onDeliver={handleDeliver}
                                 onFail={handleFail}
                                 onCancel={handleCancel}
                                 onDelete={handleDelete}
+                                onView={handleView}
                             />
 
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* 4. SIDEBAR FILTER */}
+            {/* Kita hapus onApply karena sekarang otomatis */}
+            <DeliveryFilters
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+                filters={queryParams} // Pass queryParams yang baru
+                onFilterChange={handleFilterChange}
+                onClearFilters={clearFilters}
+            />
 
         </AuthenticatedLayout>
     );

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Delivery;
 use App\Models\MineralWaterProduct;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -57,7 +58,8 @@ class KasirController extends Controller
                 ];
             });
 
-            $customer = Customer::select('id', 'name', 'owner_name', 'phone', 'address')->get();
+        $customer = Customer::select('id', 'name', 'owner_name', 'phone', 'address')->get();
+
 
         return Inertia::render('Kasir/Index', [
             'products' => $products,
@@ -154,6 +156,12 @@ class KasirController extends Controller
                 }
 
                 $order->update(['total_amount' => $totalAmount]);
+
+                Delivery::create([
+                    'order_id' => $order->id,
+                    'do_code' => Delivery::generateDOCode(),
+                    'status' => 'pending',
+                ]);
             });
 
             return redirect()->back()->with('success', 'Transaksi berhasil disimpan!');

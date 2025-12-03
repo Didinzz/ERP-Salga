@@ -117,7 +117,7 @@ class Order extends Model
         return $this->paid_amount >= $this->total_amount;
     }
 
-    public function canBeCompleted()
+public function canBeCompleted()
     {
         return in_array($this->status, ['confirmed', 'processing']) && $this->isFullyPaid();
     }

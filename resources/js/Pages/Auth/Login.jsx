@@ -41,7 +41,7 @@ export default function Login({ status, canResetPassword }) {
                 <div className="relative z-10 text-center"> {/* fade-in class jika ada di css global */}
 
                     {/* Logo */}
-                    <div className="flex justify-center mb-8">
+                    <div className="flex justify-center mb-8 lg:mt-20">
                         <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-3xl p-8 shadow-2xl">
                             <svg className="w-24 h-24 text-white" viewBox="0 0 50 50" fill="currentColor">
                                 <path d="M25 5 L25 20 Q25 30 15 35 Q25 40 25 50 Q25 40 35 35 Q25 30 25 20 Z" opacity="0.9" />
