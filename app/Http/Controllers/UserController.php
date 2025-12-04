@@ -30,8 +30,13 @@ class UserController extends Controller
 
         // Hitung statistik
         $totalUsers = User::count();
-        $activeUsers = User::where('status', 'Aktif')->count();
-        $adminUsers = User::where('role', 'Admin')->count();
+        $activeUsers = User::where('status', 'aktif')->count(); // Sesuaikan dengan lowercase 'aktif'
+        
+        // Hitung masing-masing role
+        $adminCount = User::where('role', 'admin')->count();
+        $staffCount = User::where('role', 'staff')->count();
+        $kasirCount = User::where('role', 'kasir')->count();
+        $driverCount = User::where('role', 'driver')->count();
 
         return Inertia::render('Users/Index', [
             'users' => $users,
@@ -39,7 +44,12 @@ class UserController extends Controller
             'stats' => [
                 'total' => $totalUsers,
                 'active' => $activeUsers,
-                'admin' => $adminUsers,
+                'roles' => [
+                    'admin' => $adminCount,
+                    'staff' => $staffCount,
+                    'kasir' => $kasirCount,
+                    'driver' => $driverCount,
+                ]
             ]
         ]);
     }

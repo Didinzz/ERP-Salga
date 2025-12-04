@@ -8,29 +8,36 @@ export default function Edit({ mustVerifyEmail, status }) {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Profile
-                </h2>
+                <div className="flex flex-col space-y-2">
+                    <h2 className="text-2xl font-bold leading-tight text-gray-900">
+                        Profile
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                        Kelola informasi profil dan keamanan akun Anda
+                    </p>
+                </div>
             }
         >
             <Head title="Profile" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <UpdateProfileInformationForm
-                            mustVerifyEmail={mustVerifyEmail}
-                            status={status}
-                            className="max-w-xl"
-                        />
-                    </div>
+            <div className="py-6 bg-gray-50 min-h-screen">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="space-y-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <UpdateProfileInformationForm
+                                mustVerifyEmail={mustVerifyEmail}
+                                status={status}
+                                className="max-w-xl"
+                            />
+                        </div>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <UpdatePasswordForm className="max-w-xl" />
-                    </div>
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <UpdatePasswordForm className="max-w-xl" />
+                        </div>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <DeleteUserForm className="max-w-xl" />
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <DeleteUserForm className="max-w-xl" />
+                        </div>
                     </div>
                 </div>
             </div>

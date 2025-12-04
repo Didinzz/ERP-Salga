@@ -1,34 +1,41 @@
-import { HiUsers, HiShieldCheck, HiBriefcase, HiCurrencyDollar } from "react-icons/hi2";
+import { 
+    HiUsers, 
+    HiShieldCheck, 
+    HiBriefcase, 
+    HiCurrencyDollar,
+    HiUserGroup,
+    HiTruck 
+} from "react-icons/hi2";
 
-export default function StatsGrid({ totalUsers }) {
-    const stats = [
-        {
-            title: "Total Pengguna",
-            value: totalUsers,
-            icon: <HiUsers className="w-6 h-6" />,
-            color: "blue",
-            description: "Akun terdaftar",
-        },
+export default function StatsGrid({ stats }) {
+    const roleStats = [
         {
             title: "Admin",
-            value: "12", // Nanti bisa diganti props dinamis
+            value: stats?.roles?.admin || 0,
             icon: <HiShieldCheck className="w-6 h-6" />,
             color: "green",
             description: "Hak akses penuh",
         },
         {
-            title: "Distributor",
-            value: "186", // Nanti bisa diganti props dinamis
+            title: "Staff",
+            value: stats?.roles?.staff || 0,
             icon: <HiBriefcase className="w-6 h-6" />,
-            color: "purple",
-            description: "Mitra penyalur",
+            color: "blue",
+            description: "Tim administrasi",
         },
         {
-            title: "Sales",
-            value: "50", // Nanti bisa diganti props dinamis
+            title: "Kasir",
+            value: stats?.roles?.kasir || 0,
             icon: <HiCurrencyDollar className="w-6 h-6" />,
             color: "orange",
-            description: "Tim penjualan",
+            description: "Petugas kasir",
+        },
+        {
+            title: "Driver",
+            value: stats?.roles?.driver || 0,
+            icon: <HiTruck className="w-6 h-6" />,
+            color: "purple",
+            description: "Pengemudi",
         },
     ];
 
@@ -41,23 +48,27 @@ export default function StatsGrid({ totalUsers }) {
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {stats.map((stat, index) => (
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+            {roleStats.map((stat, index) => (
                 <div
                     key={index}
-                    className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow duration-300"
+                    className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow duration-300"
                 >
                     {/* Icon dengan Background Bulat/Kotak */}
-                    <div className={`p-3 rounded-xl ${colorClasses[stat.color]}`}>
-                        {stat.icon}
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className={`p-2.5 rounded-lg ${colorClasses[stat.color]}`}>
+                            {stat.icon}
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-xs text-gray-500 font-bold uppercase tracking-wide">
+                                {stat.title}
+                            </p>
+                        </div>
                     </div>
 
                     {/* Text Info */}
-                    <div className="flex-1">
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wide">
-                            {stat.title}
-                        </p>
-                        <p className="text-2xl font-bold text-gray-800 mt-0.5">
+                    <div>
+                        <p className="text-2xl font-bold text-gray-800">
                             {stat.value}
                         </p>
                         <p className="text-xs text-gray-400 mt-1 font-medium">

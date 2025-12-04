@@ -7,20 +7,22 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MineralWaterProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Pdf;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-     return Inertia::render('Welcome', [
-          'canLogin' => Route::has('login'),
-          'canRegister' => Route::has('register'),
-          'laravelVersion' => Application::VERSION,
-          'phpVersion' => PHP_VERSION,
-     ]);
-});
+Route::get('/', [LandingPageController::class, 'index']);
 
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+// Route::get('/dashboard', function () {
+//      return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Routes untuk Produk Air Mineral
 Route::middleware(['auth'])->group(function () {
@@ -35,10 +37,6 @@ Route::middleware(['auth'])->group(function () {
      Route::post('/products/{product}/update-stock', [MineralWaterProductController::class, 'updateStock'])->name('products.update-stock');
      Route::post('/products/{product}/toggle-availability', [MineralWaterProductController::class, 'toggleAvailability'])->name('products.toggle-availability');
 });
-
-Route::get('/dashboard', function () {
-     return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
      Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

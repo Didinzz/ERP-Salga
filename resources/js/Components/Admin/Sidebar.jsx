@@ -5,11 +5,10 @@ import {
     HiHome, HiUserGroup, HiCube, HiTruck,
     HiClipboardDocumentList, HiCog6Tooth, HiChevronDown
 } from "react-icons/hi2";
-
 import { RiDashboardFill } from "react-icons/ri";
-
 import { TbCashRegister } from "react-icons/tb";
 import { FaMapSigns } from 'react-icons/fa';
+
 // Helper: Menu Item Single
 const MenuItem = ({ href, icon: Icon, label, active }) => (
     <Link
@@ -59,8 +58,65 @@ const MenuSection = ({ label }) => (
 );
 
 export default function Sidebar() {
-    // Bisa menggunakan usePage().url untuk mendeteksi active link secara otomatis
-    const { url } = usePage();
+    const { url, props } = usePage();
+    const { auth } = props;
+    const userRole = auth?.user?.role || 'guest';
+
+    // Fungsi untuk mengecek apakah role memiliki akses
+    const hasAccess = (allowedRoles) => {
+        return allowedRoles.includes(userRole);
+    };
+
+    // Menu berdasarkan role
+    const menuConfig = {
+        dashboard: {
+            label: "Dashboard",
+            icon: RiDashboardFill,
+            href: "/dashboard",
+            allowed: ['admin', 'staff', 'kasir', 'driver'],
+        },
+        users: {
+            label: "Pengguna",
+            icon: HiUserGroup,
+            href: "/users",
+            allowed: ['admin'], // Hanya admin
+        },
+        kasir: {
+            label: "Kasir",
+            icon: TbCashRegister,
+            href: "/kasir",
+            allowed: ['admin', 'kasir'], // Admin dan kasir
+        },
+        products: {
+            label: "Produk",
+            icon: HiCube,
+            href: "/products",
+            allowed: ['admin', 'staff', 'kasir'], // Admin, staff, dan kasir
+        },
+        logistik: {
+            label: "Logistik",
+            icon: HiTruck,
+            allowed: ['admin', 'driver'], // Admin, staff, dan driver
+            submenus: [
+                {
+                    label: "Pengiriman",
+                    href: "/logistik/deliveries",
+                    allowed: ['admin', 'driver'],
+                },
+                {
+                    label: "Peta Pelanggan",
+                    href: "/logistik/map",
+                    allowed: ['admin', 'driver'],
+                }
+            ]
+        },
+        // Tambahkan menu lainnya sesuai kebutuhan
+    };
+
+    // Filter menu yang bisa diakses berdasarkan role
+    const accessibleMenus = Object.entries(menuConfig).filter(([key, menu]) => 
+        hasAccess(menu.allowed)
+    );
 
     return (
         <aside className="w-64 bg-white shadow-lg flex-shrink-0 hidden md:flex flex-col h-screen sticky top-0 z-20">
@@ -72,7 +128,12 @@ export default function Sidebar() {
                 </svg>
                 <div>
                     <h1 className="text-lg font-bold text-dark">CV. Salga Mandiri</h1>
-                    <p className="text-xs text-gray-500">Admin Panel</p>
+                    <p className="text-xs text-gray-500 capitalize">
+                        {userRole === 'admin' ? 'Admin Panel' : 
+                         userRole === 'staff' ? 'Staff Panel' :
+                         userRole === 'kasir' ? 'Kasir Panel' :
+                         userRole === 'driver' ? 'Driver Panel' : 'Panel'}
+                    </p>
                 </div>
             </div>
 
@@ -80,45 +141,74 @@ export default function Sidebar() {
             <nav className="flex-1 overflow-y-auto py-4 scrollbar-hide">
                 <MenuSection label="Main Menu" />
 
-                <MenuItem href="/dashboard" label="Dashboard" icon={RiDashboardFill} active={url.startsWith('/dashboard')} />
+                {/* Dashboard - Semua role bisa akses */}
+                {hasAccess(menuConfig.dashboard.allowed) && (
+                    <MenuItem 
+                        href={menuConfig.dashboard.href} 
+                        label={menuConfig.dashboard.label} 
+                        icon={menuConfig.dashboard.icon} 
+                        active={url.startsWith('/dashboard')} 
+                    />
+                )}
 
-                <MenuSection label="Manajemen Data" />
+                {/* Menu Manajemen Data - hanya muncul jika ada akses selain dashboard */}
+                {accessibleMenus.filter(([key]) => key !== 'dashboard').length > 0 && (
+                    <>
+                        <MenuSection label="Manajemen Data" />
 
-                <MenuItem href="/users" label="Pengguna" icon={HiUserGroup} active={url.startsWith('/users')} />
+                        {/* Pengguna - Hanya admin */}
+                        {hasAccess(menuConfig.users.allowed) && (
+                            <MenuItem 
+                                href={menuConfig.users.href} 
+                                label={menuConfig.users.label} 
+                                icon={menuConfig.users.icon} 
+                                active={url.startsWith('/users')} 
+                            />
+                        )}
 
-                <MenuItem href="/kasir" label="Kasir" icon={TbCashRegister} active={url.startsWith('/kasir')} />
+                        {/* Kasir - Admin dan kasir */}
+                        {hasAccess(menuConfig.kasir.allowed) && (
+                            <MenuItem 
+                                href={menuConfig.kasir.href} 
+                                label={menuConfig.kasir.label} 
+                                icon={menuConfig.kasir.icon} 
+                                active={url.startsWith('/kasir')} 
+                            />
+                        )}
 
-                <MenuItem href="/products" label="Produk" icon={HiCube} active={url.startsWith('/products')} />
+                        {/* Produk - Admin, staff, dan kasir */}
+                        {hasAccess(menuConfig.products.allowed) && (
+                            <MenuItem 
+                                href={menuConfig.products.href} 
+                                label={menuConfig.products.label} 
+                                icon={menuConfig.products.icon} 
+                                active={url.startsWith('/products')} 
+                            />
+                        )}
 
-                <DropdownMenu label="Logistik" icon={HiTruck} active={url.startsWith('/logistik')}>
-                {/* pemesanan */}
-                    {/* <div>
-                        <Link href="/logistik/orders" className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === '/logistik/orders' ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}>
-                            Pemesanan
-                        </Link>
-                    </div> */}
-
-                    {/* pengiriman */}
-
-                    <div>
-                        <Link href="/logistik/deliveries" className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === '/logistik/deliveries' ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}>
-                            Pengiriman
-                        </Link>
-                    </div>
-
-                    {/* peta pelanggan */}
-                    <div>
-                        <Link href="/logistik/map" className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === '/logistik/map' ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}>
-                            Peta Pelanggan
-                        </Link>
-
-                    </div>
-                </DropdownMenu>
-
-                {/* <MenuSection label="Lainnya" />
-
-                <MenuItem href="#" label="Laporan" icon={HiClipboardDocumentList} active={false} />
-                <MenuItem href="#" label="Pengaturan" icon={HiCog6Tooth} active={false} /> */}
+                        {/* Logistik - Admin, staff, dan driver */}
+                        {hasAccess(menuConfig.logistik.allowed) && (
+                            <DropdownMenu 
+                                label={menuConfig.logistik.label} 
+                                icon={menuConfig.logistik.icon} 
+                                active={url.startsWith('/logistik')}
+                            >
+                                {menuConfig.logistik.submenus.map((submenu, index) => (
+                                    hasAccess(submenu.allowed) && (
+                                        <div key={index}>
+                                            <Link 
+                                                href={submenu.href} 
+                                                className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === submenu.href ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}
+                                            >
+                                                {submenu.label}
+                                            </Link>
+                                        </div>
+                                    )
+                                ))}
+                            </DropdownMenu>
+                        )}
+                    </>
+                )}
             </nav>
         </aside>
     );

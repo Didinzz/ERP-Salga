@@ -155,7 +155,7 @@ export default function DeliveryIndex({ auth, deliveries, filters, stats, driver
                                 </div>
 
                                 {/* Tombol Tambah Manual */}
-                                <div className="flex-shrink-0">
+                                {/* <div className="flex-shrink-0">
                                     <button
                                         onClick={() => router.get(route('deliveries.create'))}
                                         className="inline-flex items-center px-4 py-2.5 bg-blue-600 border border-transparent rounded-xl font-semibold text-white hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all shadow-md"
@@ -163,7 +163,7 @@ export default function DeliveryIndex({ auth, deliveries, filters, stats, driver
                                         <FaPlus className="mr-2" />
                                         Buat Pengiriman Manual
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
 
                             {/* 3. TABLE */}
