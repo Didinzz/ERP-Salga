@@ -1,4 +1,4 @@
-import { FaTruck, FaClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaTruck, FaClock, FaCheckCircle, FaTimesCircle, FaTruckLoading } from "react-icons/fa";
 
 export default function DeliveryStats({ stats }) {
     const statCards = [
@@ -19,13 +19,13 @@ export default function DeliveryStats({ stats }) {
         {
             title: 'Sedang Diantar',
             value: stats.on_delivery,
-            icon: <FaTruck size={24} />, // Bisa ganti icon lain jika mau
-            color: 'purple',
+            icon: <FaTruckLoading size={24} />, // Bisa ganti icon lain jika mau
+            color: 'purple',    
             description: 'Driver dalam perjalanan'
         },
         {
-            title: 'Selesai Hari Ini',
-            value: stats.delivered_today,
+            title: 'Total Pengiriman Selesai',
+            value: stats.total_delivered || 0,
             icon: <FaCheckCircle size={24} />,
             color: 'green',
             description: 'Berhasil sampai tujuan'

@@ -9,7 +9,7 @@ import {
     FaTruck, FaShippingFast, FaRoad, FaMapMarkerAlt, FaTruckLoading,
     FaChartLine, FaChartBar
 } from 'react-icons/fa';
-import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
+import { MdArrowUpward, MdArrowDownward, MdDriveEta } from 'react-icons/md';
 
 export default function AdminDashboard({ 
     stats, 
@@ -77,10 +77,10 @@ export default function AdminDashboard({
         const icons = {
             completed: '✓',
             delivered: '✓',
-            shipping: '🚚',
-            assigned: '📍',
-            pending: '⏱',
-            processing: '⏱',
+            shipping: <FaTruck className='mr-1' />,
+            assigned: <MdDriveEta className='mr-1' />,
+            pending: <FaClock className='mr-1'  />,
+            processing: <FaClock className='mr-1'  />,
         };
         return icons[status] || '❓';
     };

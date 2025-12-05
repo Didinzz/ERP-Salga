@@ -68,7 +68,7 @@ Route::middleware('auth')->group(function () {
                ->name('deliveries.pickup');
           Route::post('/deliveries/{delivery}/deliver', [DeliveryController::class, 'deliver'])
                ->name('deliveries.deliver');
-          Route::post('/deliveries/{delivery}/fail', [DeliveryController::class, 'markAsFailed'])
+          Route::post('/deliveries/{delivery}/fail', [DeliveryController::class, 'fail'])
                ->name('deliveries.fail');
           Route::post('/deliveries/{delivery}/cancel', [DeliveryController::class, 'cancel'])
                ->name('deliveries.cancel');

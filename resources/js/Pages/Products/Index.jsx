@@ -28,8 +28,6 @@ export default function ProductIndex({ auth, products, filters, stats, filterOpt
     const [productToDelete, setProductToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    console.log({isDeleteModalOpen})
-
     const openDeleteModal = (product) => {
         setProductToDelete(product);
         setIsDeleteModalOpen(true);
