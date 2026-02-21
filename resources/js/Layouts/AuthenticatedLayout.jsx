@@ -1,55 +1,74 @@
 import { useState, useEffect } from 'react';
-import { usePage, Link } from '@inertiajs/react'; // Import Link untuk logout
+import { usePage, Link } from '@inertiajs/react';
 import toast, { Toaster } from 'react-hot-toast';
 import Sidebar from '@/Components/Admin/Sidebar';
 // Import Icons
 import { HiBars3, HiChevronDown, HiArrowRightOnRectangle, HiUserCircle } from "react-icons/hi2";
 
 export default function AuthenticatedLayout({ header, children }) {
+    // State untuk Sidebar Mobile
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    // State untuk mengontrol dropdown profil (Buka/Tutup)
+    // State untuk Dropdown Profil
     const [isUserOpen, setIsUserOpen] = useState(false);
 
-    const { flash, auth } = usePage().props;
+    const { flash, auth, errors } = usePage().props;
     const user = auth.user;
 
-    // Efek Flash Message
+    // --- EFEK FLASH MESSAGE ---
     useEffect(() => {
-        if (flash.success) toast.success(flash.success);
-        if (flash.error) toast.error(flash.error);
-        if (flash.warning) toast(flash.warning, { icon: '⚠️' });
-    }, [flash]);
+        if (!flash) return;
+
+        if (flash.success) toast.success(flash.success, { duration: 5000 });
+        if (flash.error) toast.error(flash.error, { duration: 5000 });
+        if (flash.info) toast(flash.info, { duration: 5000 });
+
+        if (!flash.success && errors) {
+            const keys = Object.keys(errors);
+            if (keys.length > 0) {
+                const firstMsg = errors[keys[0]];
+                const message = Array.isArray(firstMsg) ? firstMsg[0] : firstMsg;
+                toast.error(message ?? 'Periksa kembali input Anda.', { duration: 5000 });
+            }
+        }
+    }, [flash, errors]);
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans">
             {/* Toaster Global */}
             <Toaster position="top-right" />
 
-            {/* Sidebar (Kiri) */}
-            <Sidebar />
+            {/* --- SIDEBAR (KIRI) --- */}
+            <Sidebar
+                isOpen={showingNavigationDropdown}
+                onClose={() => setShowingNavigationDropdown(false)}
+            />
 
-            {/* Main Content Wrapper (Kanan) */}
+            {/* --- MAIN CONTENT WRAPPER (KANAN) --- */}
             <div className="flex-1 flex flex-col overflow-hidden">
 
                 {/* --- HEADER NAVBAR --- */}
-                <header className="bg-white shadow-sm sticky top-0 z-20 h-16 flex items-center justify-between px-6">
+                <header className="bg-white shadow-sm sticky top-0 z-20 h-16 flex items-center justify-between px-4 sm:px-6 border-b border-gray-100">
 
-                    {/* Bagian Kiri: Judul Halaman / Breadcrumb */}
-                    <div className="flex-1">
-                        {header}
-                    </div>
+                    {/* BAGIAN KIRI: Hamburger & Judul */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
 
-                    {/* Bagian Kanan: Profil & Dropdown Logout */}
-                    <div className="flex items-center gap-4">
-
-                        {/* Mobile Toggle Button */}
+                        {/* Mobile Toggle Button (Pindah ke Kiri) */}
                         <button
                             onClick={() => setShowingNavigationDropdown((previousState) => !previousState)}
-                            className="md:hidden text-gray-600 hover:text-primary transition"
+                            className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg transition focus:outline-none"
                         >
                             <HiBars3 className="w-6 h-6" />
                         </button>
+
+                        {/* Judul Halaman (Truncate agar tidak nabrak di HP) */}
+                        <div className="text-lg font-semibold text-gray-800 truncate" title={typeof header === 'string' ? header : ''}>
+                            {header}
+                        </div>
+                    </div>
+
+                    {/* BAGIAN KANAN: Profil & Dropdown */}
+                    <div className="flex items-center gap-4 shrink-0">
 
                         {/* --- USER DROPDOWN START --- */}
                         <div className="relative">
@@ -75,10 +94,10 @@ export default function AuthenticatedLayout({ header, children }) {
                                 />
                             </button>
 
-                            {/* Menu Dropdown (Muncul jika isUserOpen = true) */}
+                            {/* Menu Dropdown */}
                             {isUserOpen && (
                                 <>
-                                    {/* Backdrop Invisible (Untuk menutup saat klik di luar) */}
+                                    {/* Backdrop Invisible (Klik luar untuk tutup) */}
                                     <div
                                         className="fixed inset-0 z-10"
                                         onClick={() => setIsUserOpen(false)}
@@ -87,10 +106,10 @@ export default function AuthenticatedLayout({ header, children }) {
                                     {/* Isi Dropdown */}
                                     <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl py-2 border border-gray-100 z-20 origin-top-right animate-in fade-in zoom-in-95 duration-100">
 
-                                        {/* Info User (Hanya muncul di Mobile) */}
+                                        {/* Info User (Mobile Only) */}
                                         <div className="px-4 py-3 border-b border-gray-50 sm:hidden bg-gray-50">
-                                            <p className="text-sm font-bold text-gray-800">{user.name}</p>
-                                            <p className="text-xs text-gray-500">{user.email}</p>
+                                            <p className="text-sm font-bold text-gray-800 truncate">{user.name}</p>
+                                            <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                         </div>
 
                                         <div className="px-2 pt-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -128,7 +147,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 </header>
 
                 {/* --- CONTENT AREA --- */}
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 scroll-smooth">
                     {children}
                 </main>
             </div>

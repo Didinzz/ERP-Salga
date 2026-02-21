@@ -40,7 +40,6 @@ export default function DeleteUserForm({ className = '' }) {
 
     const closeModal = () => {
         setConfirmingUserDeletion(false);
-
         clearErrors();
         reset();
     };
@@ -48,33 +47,28 @@ export default function DeleteUserForm({ className = '' }) {
     return (
         <section className={`space-y-6 ${className}`}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Delete Account
+                <h2 className="text-lg font-semibold text-gray-900">
+                    Hapus Akun
                 </h2>
-
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Once your account is deleted, all of its resources and data
-                    will be permanently deleted. Before deleting your account,
-                    please download any data or information that you wish to
-                    retain.
+                <p className="mt-1 text-sm text-gray-600">
+                    Setelah akun Anda dihapus, semua data dan sumber dayanya akan dihapus secara permanen. 
+                    Sebelum menghapus akun Anda, silakan unduh data atau informasi yang ingin Anda simpan.
                 </p>
             </header>
 
             <DangerButton onClick={confirmUserDeletion}>
-                Delete Account
+                Hapus Akun
             </DangerButton>
 
             <Modal show={confirmingUserDeletion} onClose={closeModal}>
                 <form onSubmit={deleteUser} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Are you sure you want to delete your account?
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                        Apakah Anda yakin ingin menghapus akun Anda?
                     </h2>
 
-                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        Once your account is deleted, all of its resources and
-                        data will be permanently deleted. Please enter your
-                        password to confirm you would like to permanently delete
-                        your account.
+                    <p className="text-sm text-gray-600">
+                        Setelah akun Anda dihapus, semua data dan sumber dayanya akan dihapus secara permanen. 
+                        Masukkan password Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun secara permanen.
                     </p>
 
                     <div className="mt-6">
@@ -93,9 +87,9 @@ export default function DeleteUserForm({ className = '' }) {
                             onChange={(e) =>
                                 setData('password', e.target.value)
                             }
-                            className="mt-1 block w-3/4"
+                            className="mt-1 block w-full border-gray-300 focus:border-red-500 focus:ring-red-500"
                             isFocused
-                            placeholder="Password"
+                            placeholder="Masukkan password Anda"
                         />
 
                         <InputError
@@ -104,13 +98,19 @@ export default function DeleteUserForm({ className = '' }) {
                         />
                     </div>
 
-                    <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>
-                            Cancel
+                    <div className="mt-6 flex justify-end space-x-3">
+                        <SecondaryButton 
+                            onClick={closeModal}
+                            className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
+                        >
+                            Batal
                         </SecondaryButton>
 
-                        <DangerButton className="ms-3" disabled={processing}>
-                            Delete Account
+                        <DangerButton 
+                            disabled={processing}
+                            className="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                        >
+                            Hapus Akun
                         </DangerButton>
                     </div>
                 </form>

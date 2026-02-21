@@ -21,7 +21,13 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'admin@gmail.com',
-            'password'=> Hash::make('password'),
+            'kontak' => '082346265909',
+            'role' => 'admin',
+            'password' => Hash::make('123'),
+        ]);
+
+        $this->call([
+            CustomerSeeder::class
         ]);
     }
 }

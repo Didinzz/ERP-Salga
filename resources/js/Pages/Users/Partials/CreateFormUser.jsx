@@ -1,40 +1,40 @@
+// CreateUserForm.jsx (Dengan Header Sticky)
 import { useForm } from '@inertiajs/react';
-import Modal from '@/Components/Modal'; // Modal bawaan
+import { useEffect, useState } from 'react';
+import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/UI/PrimaryButton';
 import InputGroup from '@/Components/UI/InputGroup';
-
+import SelectGroup from '@/Components/UI/SelectGroup';
+import FormSection from '@/Components/UI/FormSection';
+import PasswordConfirmation from '@/Components/UI/PasswordConfirmation';
 
 // Icons
 import {
     HiUser, HiEnvelope, HiPhone, HiBriefcase,
-    HiShieldCheck, HiLockClosed, HiUserPlus,
-    HiXMark
+    HiUserPlus, HiXMark
 } from "react-icons/hi2";
-import SelectGroup from '@/Components/UI/SelectGroup ';
-
-// Komponen Helper Kecil untuk Pembatas Section
-const FormSection = ({ title }) => (
-    <div className="flex items-center gap-4 my-6">
-        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
-            {title}
-        </span>
-        <div className="h-px bg-gray-200 w-full"></div>
-    </div>
-);
+import Spinner from '@/Components/UI/Spinner';
 
 export default function CreateUserForm({ isOpen, onClose }) {
     const { data, setData, post, processing, reset, errors } = useForm({
         name: '',
         email: '',
-        phone: '',
-        role: 'Distributor',
-        status: 'Aktif',
+        kontak: '',
+        role: 'staff',
+        status: 'aktif',
         password: '',
         password_confirmation: ''
     });
 
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Validasi client-side tambahan sebelum submit
+        if (data.password !== data.password_confirmation) {
+            return;
+        }
+
         post(route('users.store'), {
             onSuccess: () => {
                 reset();
@@ -44,21 +44,21 @@ export default function CreateUserForm({ isOpen, onClose }) {
     };
 
     const isFormValid = () => {
-        return data.name && data.email && data.password && data.password_confirmation;
+        return data.name &&
+            data.email &&
+            data.role &&
+            data.kontak &&
+            data.password &&
+            data.password_confirmation &&
+            data.password === data.password_confirmation;
     };
 
     return (
         <Modal show={isOpen} onClose={onClose} maxWidth="2xl">
-            {/* WRAPPER UTAMA: 
-                Kita bungkus semua konten dalam div bg-white dan overflow-hidden
-                agar sudut rounded modal tetap rapi dan background pasti putih.
-            */}
-            <div className="bg-white text-gray-900 overflow-hidden rounded-lg">
-
-                {/* --- HEADER --- */}
-                <div className="bg-primary px-6 py-5 flex items-center justify-between border-b border-blue-600">
+            <div className="bg-white text-gray-900 overflow-hidden rounded-lg flex flex-col max-h-[90vh]">
+                {/* --- HEADER STICKY --- */}
+                <div className="sticky top-0 z-10 bg-primary px-6 py-5 flex items-center justify-between border-b border-blue-600">
                     <div className="flex items-center gap-4">
-                        {/* Icon Wrapper */}
                         <div className="p-2.5 bg-white/15 rounded-lg backdrop-blur-sm border border-white/20 shadow-inner text-white">
                             <HiUserPlus className="w-6 h-6" />
                         </div>
@@ -70,7 +70,6 @@ export default function CreateUserForm({ isOpen, onClose }) {
                         </div>
                     </div>
 
-                    {/* Tombol Close */}
                     <button
                         type="button"
                         onClick={onClose}
@@ -80,114 +79,111 @@ export default function CreateUserForm({ isOpen, onClose }) {
                     </button>
                 </div>
 
-                {/* --- BODY FORM --- */}
-                {/* Menambahkan 'bg-white' di sini juga untuk keamanan ganda */}
-                <form onSubmit={handleSubmit} className="p-6 md:p-8 bg-white">
-
-                    {/* 1. Informasi Akun */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InputGroup
-                            label="Nama Lengkap"
-                            name="name"
-                            value={data.name}
-                            onChange={e => setData('name', e.target.value)}
-                            icon={HiUser}
-                            placeholder="Contoh: Budi Santoso"
-                            error={errors.name}
-                            required
-                        />
-
-                        <InputGroup
-                            label="Alamat Email"
-                            name="email"
-                            type="email"
-                            value={data.email}
-                            onChange={e => setData('email', e.target.value)}
-                            icon={HiEnvelope}
-                            placeholder="nama@perusahaan.com"
-                            error={errors.email}
-                            required
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <InputGroup
-                            label="Nomor Telepon"
-                            name="phone"
-                            type="tel"
-                            value={data.phone}
-                            onChange={e => setData('phone', e.target.value)}
-                            icon={HiPhone}
-                            placeholder="08xxxxxxxxxx"
-                            error={errors.phone}
-                        />
-
-                        <SelectGroup
-                            label="Role Pengguna"
-                            name="role"
-                            value={data.role}
-                            onChange={e => setData('role', e.target.value)}
-                            icon={HiBriefcase}
-                            error={errors.role}
-                        >
-                            <option value="Admin">Admin</option>
-                            <option value="Distributor">Distributor</option>
-                            <option value="Sales">Sales</option>
-                        </SelectGroup>
-                    </div>
-
-                    {/* Divider Section */}
-                    <FormSection title="Keamanan & Password" />
-
-                    {/* 2. Area Password */}
-                    {/* Menggunakan bg-gray-50 (abu sangat muda) agar kontras dengan bg-white utama */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                {/* --- BODY FORM DENGAN SCROLL --- */}
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
+                    <div className="p-6 md:p-8 bg-white">
+                        {/* 1. Informasi Akun */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <InputGroup
-                                label="Kata Sandi"
-                                name="password"
-                                type="password"
-                                value={data.password}
-                                onChange={e => setData('password', e.target.value)}
-                                icon={HiLockClosed}
-                                placeholder="Min 8 karakter"
-                                error={errors.password}
+                                label="Nama Lengkap"
+                                name="name"
+                                value={data.name}
+                                onChange={e => setData('name', e.target.value)}
+                                icon={HiUser}
+                                placeholder="Contoh: Budi Santoso"
+                                error={errors.name}
                                 required
                             />
 
                             <InputGroup
-                                label="Konfirmasi Sandi"
-                                name="password_confirmation"
-                                type="password"
-                                value={data.password_confirmation}
-                                onChange={e => setData('password_confirmation', e.target.value)}
-                                icon={HiShieldCheck}
-                                placeholder="Ketik ulang sandi"
-                                error={errors.password_confirmation}
+                                label="Alamat Email"
+                                name="email"
+                                type="email"
+                                value={data.email}
+                                onChange={e => setData('email', e.target.value)}
+                                icon={HiEnvelope}
+                                placeholder="nama@perusahaan.com"
+                                error={errors.email}
                                 required
                             />
                         </div>
-                    </div>
 
-                    {/* --- FOOTER ACTIONS --- */}
-                    <div className="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-100">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            disabled={processing}
-                            className="w-full sm:w-auto px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-all disabled:opacity-50 text-sm bg-white"
-                        >
-                            Batal
-                        </button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <InputGroup
+                                label="Nomor Telepon"
+                                name="kontak"
+                                type="tel"
+                                value={data.kontak}
+                                onChange={e => setData('kontak', e.target.value)}
+                                icon={HiPhone}
+                                placeholder="08xxxxxxxxxx"
+                                error={errors.kontak}
+                            />
 
-                        <PrimaryButton
-                            type="submit"
-                            className="w-full sm:w-auto shadow-lg shadow-blue-500/20 justify-center"
-                            processing={processing}
-                            disabled={processing || !isFormValid()}
-                        >
-                            Simpan Pengguna
-                        </PrimaryButton>
+                            <SelectGroup
+                                label="Role Pengguna"
+                                name="role"
+                                value={data.role}
+                                onChange={e => setData('role', e.target.value)}
+                                icon={HiBriefcase}
+                                error={errors.role}
+                            >
+                                <option value="staff">Staff</option>
+                                <option value="kasir">Kasir</option>
+                                <option value="driver">Driver</option>
+                                <option value="admin">Admin</option>
+                            </SelectGroup>
+
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
+                            <SelectGroup
+                                label="Status"
+                                name="status"
+                                value={data.status}
+                                onChange={e => setData('status', e.target.value)}
+                                icon={HiUser}
+                                error={errors.status}
+                            >
+                                <option value="aktif">Aktif</option>
+                                <option value="nonaktif">Nonaktif</option>
+                            </SelectGroup>
+                        </div>
+
+                        <FormSection title="Keamanan & Password" />
+
+                        {/* 2. Area Password dengan Komponen Modular */}
+                        <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                            <PasswordConfirmation
+                                password={data.password}
+                                passwordConfirmation={data.password_confirmation}
+                                onPasswordChange={e => setData('password', e.target.value)}
+                                onConfirmationChange={e => setData('password_confirmation', e.target.value)}
+                                passwordError={errors.password}
+                                confirmationError={errors.password_confirmation}
+                            />
+                        </div>
+
+                        {/* --- FOOTER ACTIONS --- */}
+                        <div className="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-100">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                disabled={processing}
+                                className="w-full sm:w-auto px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-all disabled:opacity-50 text-sm bg-white"
+                            >
+                                Batal
+                            </button>
+
+                            <PrimaryButton
+                                type="submit"
+                                className="w-full sm:w-auto shadow-lg shadow-blue-500/20 justify-center"
+                                processing={processing}
+                                disabled={processing || !isFormValid()}
+                            >
+                                {processing ? <Spinner text='menyimpan...' /> : 'Simpan'}
+
+                            </PrimaryButton>
+                        </div>
                     </div>
                 </form>
             </div>

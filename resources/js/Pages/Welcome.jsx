@@ -7,10 +7,19 @@ import About from '@/Components/LandingPage/About';
 import CallToAction from '@/Components/LandingPage/CallToAction';
 import Footer from '@/Components/LandingPage/Footer';
 
-export default function Welcome() {
+// Terima props dari controller
+export default function Welcome({ 
+    canLogin, 
+    canRegister, 
+    laravelVersion, 
+    phpVersion, 
+    products 
+}) {
+    console.log('Products from controller:', products); // Debug: cek data yang diterima
+
     return (
         <>
-            <Head title="PT Salga Mandiri - Air Minum Berkualitas" />
+            <Head title="CV Salga Mandiri - Air Minum Berkualitas" />
 
             <div className="font-sans antialiased bg-white text-gray-900">
                 <Navbar />
@@ -18,7 +27,7 @@ export default function Welcome() {
                 <main>
                     <Hero />
                     <Features />
-                    <Products />
+                    <Products products={products} /> {/* Kirim props ke Products */}
                     <About />
                     <CallToAction />
                 </main>

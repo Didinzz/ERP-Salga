@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-// Import Icons
 import {
-    HiHome, HiUserGroup, HiCube, HiTruck,
-    HiClipboardDocumentList, HiCog6Tooth, HiChevronDown
+    HiUserGroup, HiCube, HiTruck,
+    HiChevronDown, HiXMark // Tambah icon close
 } from "react-icons/hi2";
+import { RiDashboardFill } from "react-icons/ri";
+import { TbCashRegister } from "react-icons/tb";
 
-// Helper: Menu Item Single
+// Helper: Menu Item
 const MenuItem = ({ href, icon: Icon, label, active }) => (
     <Link
         href={href}
@@ -20,24 +21,20 @@ const MenuItem = ({ href, icon: Icon, label, active }) => (
     </Link>
 );
 
-// Helper: Dropdown Menu
+// Helper: Dropdown
 const DropdownMenu = ({ icon: Icon, label, active, children }) => {
     const [isOpen, setIsOpen] = useState(active);
-
     return (
         <div className="mb-1">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex items-center justify-between px-6 py-3 transition-all duration-300 group ${active || isOpen ? 'text-primary' : 'text-gray-600 hover:bg-blue-50'
-                    }`}
+                className={`w-full flex items-center justify-between px-6 py-3 transition-all duration-300 group ${active || isOpen ? 'text-primary' : 'text-gray-600 hover:bg-blue-50'}`}
             >
                 <div className="flex items-center">
                     <Icon className={`w-5 h-5 mr-3 transition-colors ${active || isOpen ? 'text-primary' : 'text-gray-400 group-hover:text-primary'}`} />
                     <span className="font-medium">{label}</span>
                 </div>
-                <HiChevronDown
-                    className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
-                />
+                <HiChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`} />
             </button>
             <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="bg-gray-50 py-2">
@@ -54,48 +51,104 @@ const MenuSection = ({ label }) => (
     </div>
 );
 
-export default function Sidebar() {
-    // Bisa menggunakan usePage().url untuk mendeteksi active link secara otomatis
-    const { url } = usePage();
+// TERIMA PROPS isOpen & onClose DARI LAYOUT
+export default function Sidebar({ isOpen, onClose }) {
+    const { url, props } = usePage();
+    const userRole = props.auth?.user?.role || 'guest';
+
+    const hasAccess = (allowedRoles) => allowedRoles.includes(userRole);
+
+    const menuConfig = {
+        dashboard: { label: "Dashboard", icon: RiDashboardFill, href: "/dashboard", allowed: ['admin', 'staff', 'kasir', 'driver'] },
+        users: { label: "Pengguna", icon: HiUserGroup, href: "/users", allowed: ['admin'] },
+        kasir: { label: "Kasir", icon: TbCashRegister, href: "/kasir", allowed: ['admin', 'kasir'] },
+        products: { label: "Produk", icon: HiCube, href: "/products", allowed: ['admin', 'staff', 'kasir'] },
+        logistik: {
+            label: "Logistik",
+            icon: HiTruck,
+            allowed: ['admin', 'driver'],
+            submenus: [
+                { label: "Pengiriman", href: "/logistik/deliveries", allowed: ['admin', 'driver'] },
+                { label: "Peta Pelanggan", href: "/logistik/map", allowed: ['admin', 'driver'] }
+            ]
+        },
+    };
+
+    const accessibleMenus = Object.entries(menuConfig).filter(([key, menu]) => hasAccess(menu.allowed));
 
     return (
-        <aside className="w-64 bg-white shadow-lg flex-shrink-0 hidden md:flex flex-col h-screen sticky top-0 z-20">
-            {/* Logo Header */}
-            <div className="p-6 border-b border-gray-200 flex items-center">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                    <span className="font-bold text-xl">S</span>
+        <>
+            {/* --- OVERLAY (UNTUK MOBILE) --- */}
+            <div
+                className={`fixed inset-0 z-20 bg-black/50 transition-opacity lg:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                onClick={onClose}
+            ></div>
+
+            {/* --- SIDEBAR CONTAINER --- */}
+            <aside
+                className={`
+                    fixed lg:static inset-y-0 left-0 z-30 
+                    w-64 bg-white shadow-xl flex-shrink-0 flex flex-col h-screen 
+                    transition-transform duration-300 ease-in-out transform 
+                    ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                `}
+            >
+                {/* Logo Header */}
+                <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+                    <div className="flex items-center">
+                        <svg className="w-8 h-8 text-primary mr-3" viewBox="0 0 50 50" fill="currentColor">
+                            <path d="M25 5 L25 20 Q25 30 15 35 Q25 40 25 50 Q25 40 35 35 Q25 30 25 20 Z" opacity="0.8" />
+                            <ellipse cx="25" cy="15" rx="8" ry="6" fill="currentColor" opacity="0.6" />
+                        </svg>
+                        <div>
+                            <h1 className="text-lg font-bold text-dark">Salga Mandiri</h1>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-wide font-semibold">
+                                {userRole} Panel
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Tombol Close (Hanya di Mobile) */}
+                    <button onClick={onClose} className="lg:hidden text-gray-500 hover:text-red-500">
+                        <HiXMark size={24} />
+                    </button>
                 </div>
-                <div>
-                    <h1 className="text-lg font-bold text-dark">PT Salga Mandiri</h1>
-                    <p className="text-xs text-gray-500">Admin Panel</p>
-                </div>
-            </div>
 
-            {/* Menu List */}
-            <nav className="flex-1 overflow-y-auto py-4 scrollbar-hide">
-                <MenuSection label="Main Menu" />
+                {/* Menu List */}
+                <nav className="flex-1 overflow-y-auto py-4 scrollbar-hide">
+                    <MenuSection label="Main Menu" />
 
-                <MenuItem href="/dashboard" label="Dashboard" icon={HiHome} active={url.startsWith('/dashboard')} />
+                    {hasAccess(menuConfig.dashboard.allowed) && (
+                        <MenuItem href={menuConfig.dashboard.href} label={menuConfig.dashboard.label} icon={menuConfig.dashboard.icon} active={url.startsWith('/dashboard')} />
+                    )}
 
-                <MenuSection label="Manajemen Data" />
-
-                <DropdownMenu label="Pengguna" icon={HiUserGroup} active={url.startsWith('/users')}>
-                    <Link href="/users" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">List Pengguna</Link>
-                    <Link href="#" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Hak Akses</Link>
-                </DropdownMenu>
-
-                <MenuItem href="#" label="Produk" icon={HiCube} active={false} />
-
-                <DropdownMenu label="Logistik" icon={HiTruck} active={false}>
-                    <Link href="#" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Stok Gudang</Link>
-                    <Link href="#" className="block pl-14 pr-6 py-2 text-sm text-gray-500 hover:text-primary hover:bg-white transition-colors">Pengiriman</Link>
-                </DropdownMenu>
-
-                <MenuSection label="Lainnya" />
-
-                <MenuItem href="#" label="Laporan" icon={HiClipboardDocumentList} active={false} />
-                <MenuItem href="#" label="Pengaturan" icon={HiCog6Tooth} active={false} />
-            </nav>
-        </aside>
+                    {accessibleMenus.filter(([key]) => key !== 'dashboard').length > 0 && (
+                        <>
+                            <MenuSection label="Manajemen Data" />
+                            {hasAccess(menuConfig.users.allowed) && (
+                                <MenuItem href={menuConfig.users.href} label={menuConfig.users.label} icon={menuConfig.users.icon} active={url.startsWith('/users')} />
+                            )}
+                            {hasAccess(menuConfig.kasir.allowed) && (
+                                <MenuItem href={menuConfig.kasir.href} label={menuConfig.kasir.label} icon={menuConfig.kasir.icon} active={url.startsWith('/kasir')} />
+                            )}
+                            {hasAccess(menuConfig.products.allowed) && (
+                                <MenuItem href={menuConfig.products.href} label={menuConfig.products.label} icon={menuConfig.products.icon} active={url.startsWith('/products')} />
+                            )}
+                            {hasAccess(menuConfig.logistik.allowed) && (
+                                <DropdownMenu label={menuConfig.logistik.label} icon={menuConfig.logistik.icon} active={url.startsWith('/logistik')}>
+                                    {menuConfig.logistik.submenus.map((submenu, index) => (
+                                        hasAccess(submenu.allowed) && (
+                                            <Link key={index} href={submenu.href} className={`block pl-14 pr-6 py-2 text-sm transition-colors ${url === submenu.href ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}`}>
+                                                {submenu.label}
+                                            </Link>
+                                        )
+                                    ))}
+                                </DropdownMenu>
+                            )}
+                        </>
+                    )}
+                </nav>
+            </aside>
+        </>
     );
 }
